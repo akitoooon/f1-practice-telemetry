@@ -90,4 +90,4 @@ Boundaries, invariants and verification gates.
 
 ## 6. Multi-Language, CI/CD & Documentation
 * **Localization:** `locales/en/` is base schema, always bundled; others load on demand (`loadLocale`, preloaded in tests); radio phrases load with Live. Backend: `internal/locales`. `I18nProvider` + `useI18n` (`context/`) support `en` and `es` (`"Español (Latinoamérica)"`), saved as `f1_telemetry_language`.
-* **CI & Docs:** New tests/generators/linters: `.github/workflows/ci.yml`; releases: `CONTRIBUTING.md`. Architecture/flag/feature changes: `README.md`, these rules (`< 20 KB`, never truncated).
+* **CI & Docs:** New tests/generators/linters: `.github/workflows/ci.yml`; releases: `CONTRIBUTING.md`. Flags/features: brief `README.md`; architecture: these rules (`< 20 KB`, never truncated).

@@ -1,6 +1,6 @@
 # 🏎️ F1 Telemetry
 
-> High-performance real-time telemetry analyzer, pit wall dashboard, and AI race engineer for **EA Sports F1 25 & F1 26**.
+> Real-time telemetry, pit wall dashboard and AI race engineer for **EA Sports F1 25 & F1 26**.
 
 [![Go](https://img.shields.io/badge/Go-1.26+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react)](https://react.dev/)
@@ -11,241 +11,118 @@
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-### ⏱️ Live Pit Wall & Race Control
-* **Three View Modes:** Switch between the complete Race Control Hub, a zero-overhead **Voice Cockpit Mode** built for maximum FPS on sim rigs and VR (on Windows it's the race engineer's own window), and a **Driver** view for a phone mounted by the wheel.
-* **Driver View for Your Phone (`/live/driver`):** Big, high-contrast numbers with no glow or animation: position, gaps ahead and behind with the race engineer's closing/opening trend, last vs best lap, four-corner tyre wear, fuel, ERS, flags (SC, VSC, yellow, blue) and warnings. Phones open it automatically and it keeps the screen on (Screen Wake Lock, or a muted looping video over plain HTTP; if the browser blocks both it suggests turning off auto-lock).
-* **Race Control for a Second Monitor (`/live/dashboard`):** Your car's vitals, a battle panel (the cars ahead and behind, gaps with their per-lap trend, tyres, 2025 DRS or 2026 overtake mode), a track position strip with every car round the lap and the pit lane, and the four hub panels laid out as a grid, one wide row, a race pair (feed + pit strategy) or a timing pair (sectors + feed).
-* **Performance Mode:** The gauge button in the top bar switches to solid panels with no glow or animation, for a slow device or a screen read at a glance. It's on by default in the Driver view, which keeps its own setting, and it's saved per device.
-* **Live Leaderboard & Timing Tower:** Full-grid timing tower with interval deltas, tyre compounds, pit status, and live Active Aero / Boost indicators. Click any car (in the tower, the battle panel or the strip) for its drawer: gap to the leader, tyres, pit stops, stints and every completed lap with S1/S2/S3 (`GET /api/live/cars/{index}/laps`).
-* **Dynamic Weather & Radar:** Live precipitation forecasts (+5m to +30m), track temperature trends, and tyre crossover recommendations.
-* **Live Status on Every Page:** The nav's LIVE badge is accurate from any page (the server reports packet age and the active session at `GET /api/system/status`), and a toast offers to open the Live view as soon as a session starts.
-* **Real-Time Incidents & Sectors:** Instant race-control ticker tracking overtakes, penalties, safety cars, sector splits (S1, S2 and S3 of completed laps from the game's session history), speed traps, and theoretical best laps in English and Spanish.
+### ⏱️ Live pit wall
+* **Three live views:** Race Control for a second monitor, a lightweight Voice Cockpit for sim rigs and VR, and a high-contrast Driver view for a phone by the wheel.
+* **Timing tower:** full-grid intervals, tyres, pit status and 2026 Active Aero / Boost. Click any car for its stints and every lap with sectors.
+* **Battle panel & track strip:** gaps to the cars around you with their per-lap trend, and every car's place round the lap.
+* **Weather radar:** rain forecast up to +30 min, track temperature trend and tyre crossover advice.
+* **Race control feed:** overtakes, penalties, Safety Cars, sector splits and speed traps.
 
-### 🔍 Lap Comparator & Track Map
-* **Side-by-Side Telemetry:** Compare any two laps across Speed, Throttle, Brake, Gears, ERS, and 2026 Active Aero (`Corner` / `Straight` mode) & Boost traces.
-* **Interactive Track Visualizer:** Synchronized circuit map with turn badges, apex speed deltas, and racing line overlays.
-* **Where Did I Lose Time:** Per-corner breakdown comparing entry speed, minimum apex speed, braking point, throttle pickup, and time delta across every turn. Clicking a corner zooms the charts and map to that segment (synced to the URL), and **Ask AI** sends that corner directly to the AI Race Engineer.
-* **Strip Charts & Card Views:** Switch between individual trace cards and a compact synchronized strip layout with cursor readouts, drag-to-zoom, and customizable trace order and visibility.
-* **Quick Start & Server-Side Distance Merging:** One-click comparisons before picking a lap (your best vs. session fastest, vs. your previous session at the circuit, or at another track) backed by a 5m distance-normalized server grid.
-* **Automatic Player Reference & Rival Matching:** Slot A automatically selects your car's best lap in the session (falling back to the overall fastest lap), while Slot B automatically matches your chosen comparison target (**Fastest Lap / Leader** with P2 tiebreaker, **Teammate**, or a **Specific Driver**).
+### 🔍 Lap comparator
+* **Two laps side by side:** speed, throttle, brake, gear, ERS and 2026 aero / boost traces, with a synced track map.
+* **Where did I lose time:** entry speed, apex speed, braking point, throttle pickup and time lost at every corner; **Ask AI** about any of them.
+* **One-click comparisons:** your best against the session's fastest, the leader, your teammate, any driver, or your last visit to the track.
 
-### 📊 Session History, Story & Track Progress
-* **Session Story & Unified Tab Bar:** Sessions open on the **Story** tab featuring your race summary, clean-lap pace against the field median and leader, a key-moments timeline from the race-control feed, and an on-demand AI debrief. Switch seamlessly across **Classification**, **Pace**, **Positions**, **Gap to Leader**, **Tyres & Stints**, and **Sectors & Speed** with shared driver selection and SC/VSC chart shading.
-* **Scalable Session List:** Browse sessions in pages of 50 with collapsible grouping by day, track, or tag, combinable quick filters (*Last 7 days*, *Your results*, *Podiums*, *Places gained*, *No driver*), and savable filter chips. Inside a session, the classification toggles between Gap to Leader and Interval to the car ahead with F1 purple/green/yellow sector indicators.
-* **Tyre Degradation on Clean Laps:** Fits each stint's degradation slope and clean average across representative racing laps only—automatically excluding pit in/out laps, SC/VSC laps, and outlier laps above 107% of the stint median (plotted as hollow dots).
-* **Your Car in Every Session:** Records the car you drove (`player_car_index`) or lets you pick it afterward—individually via the **Who were you?** dialog or across multiple sessions with **Set my driver…**—powering your results column, Story summary, default chart selections, AI debriefs, and Lap Comparator defaults.
-* **Track Progress:** Circuit-by-circuit progression page (`/progress` and `/progress/:track`) tracking your personal best lap, theoretical best from valid sectors, gap to the session fastest lap, and clean-lap consistency trends over time.
-* **League & Tag Organization:** Categorize sessions by league (*WOR*, *AOR*, *PSGL*) or setup with custom tags and batch operations (multi-session ZIP export, bulk tagging, and drag-and-drop import with duplicate detection).
+### 📊 Sessions & progress
+* **Session story:** race summary, clean-lap pace against the field, key moments and an AI debrief, plus pace, position, gap, tyre and sector charts.
+* **Tyre degradation on clean laps:** per-stint slopes that leave out pit, SC / VSC and outlier laps.
+* **Track progress:** personal best, theoretical best and consistency at each circuit over time.
+* **Organize:** filter, group and tag sessions by league or setup; export and import them as ZIP.
 
-### 🎙️ AI Race Engineer & Voice Radio
-* **Hands-Free Global Push-to-Talk (PTT):** DirectInput support for steering wheels (Fanatec, Logitech, Moza, Simagic) and global keyboard shortcuts while driving in full-screen.
-* **Proactive Pit Wall Calls:** Context-aware pit wall alerts for tyre wear/temperatures, aero damage, ERS deployment, fuel Lift & Coast, rival gaps, and safety cars.
-* **Talks on the Straights:** The engineer learns where each track's straights are from your own laps (flat out, off the brakes, wheel straight; kept between races), and holds routine calls until one is long enough to say them, so a call doesn't land in a braking zone. Until a track is learned it waits while you brake or turn. One call waits for the last one to finish, with a breather after a Safety Car, red flag or crash call, and urgent calls still cut in at once. Calls held while the game is paused don't go stale.
-* **Box Calls That Know Where the Pit Entry Is:** The engineer learns each track's pit entry, and what a stop costs there, from the cars that pit (kept between races), so a call to pit says "box this lap" only while you can still make it, "box next lap" when it's too late, and reminds you as the entry comes up. It follows the game's own pit plan like the in-game engineer: "box next lap" a lap before the game's ideal lap, "box this lap" (with where you'd rejoin) on it, a last call on the plan's latest lap if you stayed out, and "box" when a Safety Car or VSC comes out near the planned stop. It also tells you when the car behind pits (cover the undercut) or the car ahead does (push for the overcut), once per stop. Every call has its own switch, grouped by section, in Settings → Radio calls.
-* **Battle Intel, Strategy News and Weather:** The engineer tells you when you're catching the car ahead, or the car behind is catching you, from up to 4 seconds away: the gap, how much it comes down each lap, and in how many laps it's a fight (only when that's before the flag). It tells you when the car ahead or behind gets a time penalty, when the leader or a car within 10 seconds pits, whether the plan's stop would put you in traffic, and when your drive-through or stop-go is served. In the wet it says when the rain gets heavier, eases or stops, and hedges a forecast the game marks as approximate. In a race it tells you when the track is 6 degrees hotter or cooler than when the stint started, in your own units. With the AI wording calls, it can name the rival and say its tyres.
-* **Race Traffic Said at Once:** A car behind coming within a second is said right away, even under braking, starting with the gap, not your callsign; it no longer holds back the call about the car ahead. A blue flag is said on any lap, the in-lap and the out-lap after your stop included: it cuts in over anything else on the radio, says when two cars are about to lap you, "clear" once they're through, and outlasts a push-to-talk press. A slow or stopped car on the road ahead (a crash, damage, a car rejoining) is called by when you'll reach it, the same way as the qualifying traffic ("Car stopped ahead, on it in 8 seconds"). A car counts as slow only next to how the rest of the field runs that part of the lap in this race, so cars that brake earlier than you or take a corner slower aren't called; until the field's speeds are known (about the first lap), only a stopped car is. When you're the slow one (a spin, damage, rejoining) you're warned of the cars coming from behind by when they reach you, then "on you now" and "clear", two cars together when they come close behind each other, and no battle calls meanwhile. Leaving your box after a stop, you're warned of a car coming past the pit exit as you join, and "push now" isn't said right after it. These have their own switch under the flags; they need the track's speeds, so at a track you've never driven they start once you've done a whole clean lap there. Their lines are made ahead of time, so they start at once.
-* **Qualifying Like the Pit Wall:** On out-laps and in-laps the engineer warns you of a car behind on a push lap by when it reaches you ("Push-lap car behind, with you in 8 seconds"), tells you at the end of the out-lap whether you have traffic or clean air ahead, warns you of a slow car ahead on your push lap and of yellow flags, gives your lap result at the line (position and gap to P1, or provisional pole, and whether you're in the drop zone in Q1/Q2), and calls the session clock and the elimination danger zone once each. Gaps are measured by track position, so they hold even when every car has run a different number of laps. A traffic warning starts with the warning itself, not your callsign, and cuts in over anything else on the radio, even the lap result, which is said again right after it. The number is true when you hear it: it comes from how fast both cars are going right now, round the track's slow and fast parts (learned from every car on a push lap in practice and qualifying, and kept for the next visit; until then, from your own first whole lap there), and from how long calls took to reach you on this device. On an in-lap it counts on you slowing to your in-lap pace. The slow car ahead on your push lap is called the same way, when you'd reach it before the line. A slider sets the warning time, 4–15 s (8 by default); a car right on you gets "right behind you" with no number. About 3 seconds before a warned car gets to you the engineer says it's on you now, and once it's through, "clear", unless another push-lap car is coming, which gets its own warning instead; two cars arriving within 3 seconds of each other are warned of together ("Two push-lap cars, with you in 8 seconds"). Leaving the garage, you're warned when a push-lap car will come past the pit exit as you join (the exit is learned from the cars leaving their garages), and "push now" isn't said right after it. A push-to-talk press keeps the warnings with no number and says them when you let go; one with a number is dropped, since it would be wrong by then. "On You & Clear Calls" has its own switch. The lines are made ahead of time, so a warning starts at once.
-* **Gap and Tyre Reports:** Every few laps of a race (3 by default, adjustable) the engineer gives your position and the gaps to the cars within 10 seconds ahead and behind, with whether each is closing, opening or stable, said with real numbers in your language. It skips laps under the Safety Car, around your pit stop and right after a battle call. It also tells you how many laps your tyres have left (at about 8 and again at 3), or that they'll make the end. The last lap gets its own call with your position instead.
-* **Radio Q&A With the Full Race Picture:** Ask anything over push-to-talk; the engineer tracks live gaps, rival tyres and pit stops, wear rates, fuel targets, pit windows, and weather, and uses function calling to look up deeper lap-by-lap history or standings on demand. Answers come from a fast radio model (Claude Haiku 5.5, Gemini Flash-Lite or GPT-4o mini; a custom server uses its chat model) asked to answer without long thinking, and start speaking as soon as the first sentence is synthesized.
-* **Neural Voices & Bilingual Personas:** Authentic pit wall personas (**Bono 🇬🇧**, **Franco Colapinto 🇦🇷**, or **Custom**) in **English** and **Español (Latinoamérica)**, Argentine Spanish with *vos*, with cockpit radio filtering, static squelch, and FOM harmonic beeps.
-* **Never the Same Line Twice:** Every call has several wordings per persona, and the engineer goes through all of them before one comes back. Calls say the facts behind them: which tyre is worn or punctured and by how much, the sector and the time lost in it, the chance of rain and when, how far short the fuel is, your reaction time at the start. Your callsign comes on urgent calls and now and then on the rest, not on every line.
-* **Fresh Words From the AI:** With an AI provider set up, the radio model says routine calls (tyre wear, damage, fuel, gap reports, pit stop times) in new words each time, in your persona, the custom one included. Every number of the call is kept and none is added, and a line that changes the facts, repeats a recent one or comes too late (2.5 s) is replaced by the usual catalogue line. Urgent calls, calls to box and moments that go stale fast (battles, sector times) stay instant. On by default; switch it off under **Engineer & voice**.
-* **Server-Built Context & Rich Markdown Chat:** The server assembles live briefings, post-session debriefs, and zoomed lap comparisons directly from telemetry data, streaming replies formatted with tables, lists, code blocks, and an expandable reading view. On a wide screen the chat can dock beside the page, which makes room for it instead of covering the comparator or your charts.
-* **Ask AI About Any Chart:** The session detail's pace, position, gap, degradation and sector charts and the Story tab's key moments each have an **Ask AI** button. The chat always knows which session tab you have open, and the server adds that chart's data (lap-by-lap times and gaps, every stint's degradation, sector times) to what the engineer reads.
-* **Per-Provider AI Settings:** Choose **Google Gemini**, **OpenAI**, **Anthropic Claude**, or a local/OpenAI-compatible server (with one-click **Ollama**, **LM Studio**, and **Groq** presets) and browse a searchable list of supported chat models. The settings page also picks the radio model that answers push-to-talk, apart from the chat's model.
+### 🎙️ AI race engineer
+* **Push-to-talk from your wheel or keyboard:** DirectInput (Fanatec, Logitech, Moza, Simagic) and global shortcuts, even in full screen.
+* **Calls timed for the straights:** tyres, damage, fuel, ERS, gaps, weather, penalties, Safety Cars and blue flags, kept out of braking zones.
+* **Box calls that know the pit entry:** follows the game's pit plan, says "box this lap" only while you can still make it, and calls the undercut and overcut.
+* **Traffic in qualifying and the race:** push-lap cars behind, slow or stopped cars ahead and cars at the pit exit, said by when they'll reach you.
+* **Ask anything:** the engineer knows the live gaps, tyres, pit windows and weather, and looks up lap history when it needs it.
+* **Personas and voices:** Bono 🇬🇧, Franco Colapinto 🇦🇷 or your own, in English or Latin American Spanish, with radio effects. The AI can reword routine calls so they don't repeat.
+* **Your choice of AI:** Google Gemini, OpenAI, Anthropic Claude, or a local / OpenAI-compatible server (Ollama, LM Studio and Groq presets).
+
+Every radio call has its own switch in **Settings → Radio calls**.
 
 ---
 
 ## 🚀 Quick Start
 
-### 📦 Download (Recommended)
+Download the build for your system from the **[latest release](https://github.com/mgauna-ar/f1game-telemetry-go/releases/latest)**. You don't need Go or Node.js.
 
-Pre-compiled, self-contained builds with the embedded web dashboard are available under **[GitHub Releases](https://github.com/mgauna-ar/f1game-telemetry-go/releases/latest)**. You don't need Go or Node.js to run them.
+| System | File |
+|---|---|
+| Windows (x64) | `f1telemetry_<version>_windows_amd64_setup.exe` (installer) or `f1telemetry_<version>_windows_amd64.zip` (portable) |
+| macOS (Apple Silicon) | `f1telemetry_<version>_darwin_arm64.zip` |
+| Linux (x64) | `f1telemetry_<version>_linux_amd64.tar.gz` |
 
-1. Download the file for your operating system from the **[Latest Release](https://github.com/mgauna-ar/f1game-telemetry-go/releases/latest)**:
-   * **Windows (x64):** the installer, `f1telemetry_<version>_windows_amd64_setup.exe`, or the portable `f1telemetry_<version>_windows_amd64.zip`
-   * **macOS (Apple Silicon M-series):** `f1telemetry_<version>_darwin_arm64.zip`
-   * **Linux (x64):** `f1telemetry_<version>_linux_amd64.tar.gz`
+Other platforms: build from source (below). Windows on ARM runs the x64 build.
 
-   Other platforms (Intel Macs, ARM Linux) aren't published as binaries: build from source with `make build-embedded`. Windows on ARM runs the x64 build.
-2. Install or extract it:
-   * **Windows installer:** run it. It installs F1 Telemetry for your user (no administrator prompt) in `%LOCALAPPDATA%\Programs\F1 Telemetry` and adds it to the Start menu. It also installs Microsoft's WebView2 Runtime, which the app's window needs, on a PC that doesn't have it (Windows 11 and an up-to-date Windows 10 do). Uninstall it from **Settings → Apps**: your sessions, settings and log stay in its folder.
-   * **Windows zip:** extract it to a folder you can write to and run `f1telemetry.exe`. The zip needs the WebView2 Runtime too.
-   * **macOS / Linux:** extract it and run `./f1telemetry`.
-
-   The database (`f1telemetry.db`), the log and a `.env` live next to the app, in the installer's folder as in the zip's. Already using the zip? **Update now** keeps your folder and data (see [Updating](#-updating)); to use the installer instead, install it into that folder.
-3. **On Windows**, F1 Telemetry opens in a window of its own with the whole dashboard (see **On Windows** below). **On macOS / Linux** a small **app window** opens: whether the game is sending telemetry, the dashboard's address on this PC and for a phone or tablet, what to enter in the game, an **Open dashboard** button and, when a new release is out, **Update now**. It's a Chrome, Edge, Chromium or Brave window without tabs (without one of these it opens as a tab in your default browser); on macOS it opens in your own browser profile, so the browser stays the one you're signed in to. Closing it keeps the app running in its terminal (stop it with Ctrl+C or the window's **Quit** button), and **Show this window at startup** in it starts the app straight to the terminal. Starting it again while it's already running does nothing.
-
-Every page has its own address you can bookmark or share on your network: a session (`/history/12/stints`), a lap comparison with its zoom (`/compare?sa=12&a=345&b=346`), your progress at a track (`/progress/Silverstone`), the live cockpit (`/live/cockpit`) or a settings section (`/settings/comparator`).
-
-#### 🖥️ On Windows: its own window and the notification area
-
-* **Its own window:** the dashboard opens in an F1 Telemetry window, not in a browser. It remembers its size, its place and the monitor it was on. Closing it keeps the app running in the notification area (next to the clock; Windows 11 may first put it under the **^** overflow, and you can drag it out to keep it visible), and the race engineer keeps talking. Starting the app again brings the window up.
-* **The notification area icon:** **left-click** it to bring the window back. **Right-click** for the menu: the live status (*"Live: Race · Monza"* or *"Waiting for the game on UDP port 20777"*), **Open F1 Telemetry**, **Live view**, **Race engineer**, **Start with Windows**, **Open data folder**, **Open log file** and **Quit**. When a new release is out the menu says so, and the notice opens **Settings → App**. The icon shows a green dot while the game is sending telemetry, and the menu follows your Windows display language (English or Spanish).
-* **The race engineer's window:** the voice cockpit on its own, without the rest of the dashboard: the engineer and what it's doing, what it said and what you asked, volume, the radio switch and its settings, the safety car or red flag banner, and a strip with your position, lap, fuel, ERS, tyre wear and damage. It runs from the start, hidden until you open it (**Race engineer** in the menu, or **Open the engineer window** on Live), so the engineer talks whatever page the main window shows. Closing it hides it and the engineer keeps talking; if it was open when you quit, it opens again the next time.
-* **One radio per PC:** on the PC running the app, only the engineer window speaks and listens to push-to-talk. The main window and a dashboard opened in a browser on that PC stay silent (their radio switch is greyed out, and Live leads to the engineer window), so nothing talks over the engineer or answers a press twice. Phones and tablets keep their own switch. Push-to-talk speech in the window is recognized by Microsoft's service, as in Edge.
-* **Links:** pages from other sites (release notes, AI provider pages, links in AI answers) open in your default browser.
-* **This device:** the app's windows keep their own copy of the **This device** settings (volume, radio effects, language, units, views), so they start at this PC's defaults the first time; a change in one window reaches the other at once. The engineer's voice, push-to-talk and AI keys come from the server, as on every device.
-* **Settings → App** (only on the PC running the app): the version and **Update now**, whether the window opens when F1 Telemetry starts (off: it starts in the tray; the engineer starts either way), **Start with Windows**, the dashboard's address for a phone or tablet, and **Quit**.
-* **Start with Windows** (in the menu or Settings → App) starts it in the tray when you sign in, without the windows (the engineer still talks), using the same database.
-* The log is written to `f1telemetry.log` next to the database. If the app can't start (for example because another program uses its port), it tells you in a dialog.
-* Each radio call the engineer window (or the Live page, in a browser) handles gets a `Radio call heard` line in the log: whether you heard it (`said`), it was cut off, went stale before its turn or had no voice, how long it waited, how long its voice took to make (`synth_ms`, or `cached`), how long after it came the first word was said (`start_ms`) and whether the page was in front (`visible`). `Push-lap traffic` says when a traffic call was made and the number it said, and `Push-lap car passed` how long after the call the car went by. `Blue flag shown` says how far back the car lapping you was when the game showed the flag, and `Lapping car passed` how long after it the car went by. `Race traffic` and `Race traffic passed` do the same for a slow or stopped car ahead, or a car coming on you, in a race.
+1. **Install or extract it.** The Windows installer needs no administrator rights and adds F1 Telemetry to the Start menu; with the zip, run `f1telemetry.exe`. On macOS / Linux, run `./f1telemetry`. The database, the log and `.env` live next to the app.
+2. **[Set up the game](#-game-setup)** to send telemetry to it.
+3. **Open the dashboard.** Phones and tablets on your network can open it too: the Live tab shows its address.
 
 > [!NOTE]
-> **Windows Defender / SmartScreen Notice:**
-> Because this is a free, community open-source project without an expensive commercial code-signing certificate, Windows Defender SmartScreen may display a blue warning (*"Windows protected your PC"* or *"Unknown Publisher"*) for the installer or the app. This is standard and expected for newly released, unsigned open-source executables.
->
-> To proceed: click **"More info"** → **"Run anyway"**. You can also verify binary integrity against the official SHA-256 hashes published in `checksums.txt`, or compile the binary yourself from source.
+> The builds aren't code-signed, so Windows SmartScreen may warn about an unknown publisher. Click **More info → Run anyway**, or check the file against the release's `checksums.txt`.
+
+**On Windows** the dashboard opens in its own window. Closing it keeps the app, and the engineer, running in the notification area: right-click the icon for the live status, the **Race engineer** window, **Start with Windows**, the data folder, the log and **Quit**. The race engineer window is the voice cockpit on its own; on the PC running the app only it speaks and listens to push-to-talk, so nothing talks twice. The window needs Microsoft's WebView2 Runtime, which Windows 11 and an up-to-date Windows 10 have; the installer adds it otherwise.
+
+**On macOS / Linux** a small app window shows whether the game is sending telemetry, the dashboard's addresses and an **Open dashboard** button. Closing it keeps the app running in its terminal; stop it with Ctrl+C or **Quit**.
 
 ### 🔄 Updating
 
-When a new release is out, the dashboard shows it next to the version in the top bar. On the PC running the app, its release notes, **Settings → App** and the macOS / Linux app window have an **Update now** button; on Windows the tray menu says so too. One click downloads the release for your system from GitHub, checks it against the release's `checksums.txt`, makes sure it starts, puts it in place of the app and restarts it. On Windows the window reopens on **Settings → App** with the new version; a page in a browser reloads on it. Your sessions, settings and log stay where they are, and the app keeps its flags (port, database). It works on Windows, macOS and Linux, installed or from the zip, even during a session (the restart drops a few seconds of telemetry).
-
-* The app needs to be able to write to its own folder. If it can't (for example a copy in `/usr/local/bin`), it says why and links to the release to download it by hand.
-* Only the PC running the app sees the button, not a phone or tablet.
-* Coming from 1.x on Windows: **Update now** in 1.x's small window installs 2.0 in the same folder. That small window then says F1 Telemetry has its own window now: click **Open F1 Telemetry** and it closes.
-* Versions before the first one with **Update now** don't have it: download that one by hand once.
-
-### 🧪 Development Builds (Without a Release)
-
-Every CI run of a pull request or of `main` builds all three binaries. You can also start one by hand for any branch: **Actions** → **CI/CD Pipeline** → **Run workflow** (tick **installer** to also build the Windows installer, `f1telemetry-windows-amd64-setup`). Open the run, scroll to **Artifacts**, and download the one for your system (e.g. `f1telemetry-windows-amd64`). They are kept for 14 days. These builds report a `dev-<commit>` version, so they don't offer release updates. On macOS / Linux, make the extracted file executable first (`chmod +x f1telemetry_*`).
+When a new release is out, the top bar says so. **Update now** (in **Settings → App**, the Windows tray menu or the macOS / Linux app window) downloads it, checks it against `checksums.txt` and restarts the app; your sessions and settings stay. It's only offered on the PC running the app, and needs to write to the app's folder.
 
 ---
 
-## 🎮 F1 Game Configuration
+## 🎮 Game Setup
 
-To stream telemetry from your game (PC, PlayStation, or Xbox):
+In **F1 25** or **F1 26**, open **Game Options → Settings → Telemetry Settings**:
 
-1. Open **F1 25** (or **F1 26**) and navigate to **Game Options** → **Settings** → **Telemetry Settings**.
-2. Configure the following options:
-   * **UDP Telemetry:** `On`
-   * **UDP Format:** `2025` *(or `2026` for Season Pack DLC)*
-   * **UDP IP Address:** IP address of the machine running this application (`127.0.0.1` if playing on the same PC; the **Live** tab displays your PC's LAN IP addresses with copy buttons for consoles)
-   * **UDP Port:** `20777`
-   * **UDP Send Rate:** `20Hz` *(Recommended. Saved laps are stored at up to 20 Hz, so a higher rate works but adds nothing to them)*
-
----
-
-## 🛠️ Building & Development
-
-If you prefer building from source or contributing to the codebase:
-
-### Prerequisites
-* [Go 1.26+](https://go.dev/dl/)
-* [Node.js 22+](https://nodejs.org/)
-
-### One-Click Standalone Launch (Windows)
-```powershell
-.\run.bat
-```
-*Installs frontend dependencies if needed, builds the embedded web assets, compiles, and launches the standalone single-binary application.*
-
-### Single-Binary Embedded Build (All Platforms)
-```bash
-# Install frontend dependencies (first time only):
-cd frontend && npm install && cd ..
-
-# Build the complete standalone binary containing embedded web assets:
-make build-embedded
-
-# Run the single binary (or build + run in one step with `make run-embedded`):
-./bin/f1telemetry
-```
-
-### Hot-Reload Dev Mode
-```bash
-# Terminal 1: Backend
-make dev      # or: go run ./cmd/server
-
-# Terminal 2: Frontend (Hot Reload)
-cd frontend && npm install && npm run dev
-```
-
-Open **[http://localhost:5173](http://localhost:5173)** in your browser for live Vite development.
-
-### Wire Types (Go → TypeScript)
-The frontend's types for server JSON (`frontend/src/types/generated/`) are generated from the Go structs by `cmd/tsgen`. After changing a Go wire type, regenerate them:
-```bash
-make gen-types   # or: go run ./cmd/tsgen
-```
-CI runs `go run ./cmd/tsgen -check` and fails when the generated files are out of date.
-
----
-
-## 🧪 Test with Built-in Simulator
-
-You don't need the game open to test and explore the dashboard! Use the built-in UDP telemetry simulator to broadcast synthetic telemetry:
-
-```bash
-# Linux / macOS:
-make simulate                # Simulate a full Race (default F1 2026: 22 cars + 2 observers)
-make simulate SESSION=quali  # Simulate a Qualifying session
-make simulate FORMAT=2025    # Use F1 2025 format (20 cars + 2 observers)
-
-# Windows:
-.\simulate.bat               # Or: go run ./cmd/simulator -session race
-```
-
-#### Scenario Flags (for testing the Voice Race Engineer)
-
-Trigger specific in-race situations to test proactive radio alerts without waiting for them to happen naturally:
-
-```bash
-go run ./cmd/simulator -scenario wear      # Tyres start at 38.5% → triggers tyre deg alerts quickly
-go run ./cmd/simulator -scenario sc        # Deploys a Full Safety Car → tests SC radio call
-go run ./cmd/simulator -scenario vsc       # Deploys Virtual Safety Car (VSC)
-go run ./cmd/simulator -scenario rain      # Approximate rain forecast, then rain that gets heavy, eases and stops while the track cools → forecast, crossover and weather change calls
-go run ./cmd/simulator -scenario start     # Formation lap warmup, grid approach, and lights-out launch reaction debrief
-go run ./cmd/simulator -scenario pit       # AI cars pit (pit entry learned), a puncture late on lap 3 → "box next lap", pit entry reminder, then the player's stop: limiter, penalty hold, stop time, exit with a drive-through served
-go run ./cmd/simulator -scenario strategy  # 12-lap race on the game's pit plan: "box next lap" on lap 2, "box this lap" on lap 3 (ignored), last call on lap 5 and the stop, then a VSC near the second stop → "VSC, we take the stop", VSC ending; the car ahead pits on lap 2 (overcut), then the player closes on it (closing call) and it gets a time penalty on lap 4; AI cars behind pit (news); lap 12 is the last
-go run ./cmd/simulator -scenario qualy     # Q1 runs (out-lap, push lap, in-lap, garage): car behind on a push lap, out-lap traffic / clean air, slow car ahead and a yellow on the push lap, a deleted lap, drop zone and session clock calls
-go run ./cmd/simulator -scenario traffic   # Q1 in real time: a push-lap car at the pit exit as you join, two push-lap cars catching you on the out-lap and a slow car on your push lap, to time the traffic calls
-go run ./cmd/simulator -scenario racetraffic # a race in real time: a car right behind you on lap 2, two cars lapping you under a blue flag on lap 3, a stopped car and a slow car ahead on lap 4, a spin on lap 5, a pit stop on lap 6
-```
+| Setting | Value |
+|---|---|
+| UDP Telemetry | `On` |
+| UDP Format | `2025` (`2026` for the Season Pack) |
+| UDP IP Address | `127.0.0.1` on the same PC; on a console, the PC's address from the Live tab |
+| UDP Port | `20777` |
+| UDP Send Rate | `20Hz` (laps are saved at up to 20 Hz) |
 
 ---
 
 ## ⚙️ Configuration (Optional)
 
-Server settings can be set with command-line flags, environment variables, or a `.env` file (copy `.env.example` to `.env` in the folder you start the app from, or next to the executable). Flags win over environment variables, and real environment variables win over `.env`. The AI variables are defaults: anything saved in the in-app AI settings wins over them.
+Set these as command-line flags, environment variables or in a `.env` file next to the app (see `.env.example`). Flags win over environment variables, which win over `.env`. The AI variables are defaults: settings saved in the app win over them.
 
 | Flag | Variable | Description | Default |
 |---|---|---|---|
-| `-udp` | `F1T_UDP_ADDR` | UDP telemetry listener address | `0.0.0.0:20777` |
-| `-http` | `F1T_HTTP_ADDR` | Web API & WebSocket server address | `:8080` |
-| `-db` | `F1T_DB_PATH` | SQLite database file (relative paths are resolved from the current folder; the full path is shown at startup) | `f1telemetry.db` |
-| `-open-browser` | `F1T_OPEN_BROWSER` | macOS / Linux: open the dashboard in the browser on startup; Windows opens its own window (`-no-browser` is still accepted and does nothing) | `false` |
-| `-no-tray` | `F1T_NO_TRAY` | Windows: run without the window and the notification-area icon (the release build then shows nothing; stop it from Task Manager) | `false` |
-| `-version` | — | Print version, commit, and build date, then exit | `false` |
-| | `GEMINI_API_KEY` | Google Gemini API key for the AI Race Engineer | *(Can be set in UI)* |
-| | `OPENAI_API_KEY` | OpenAI API key for the AI Race Engineer | *(Can be set in UI)* |
-| | `ANTHROPIC_API_KEY` | Anthropic API key for Claude models in the AI Race Engineer | *(Can be set in UI)* |
-| | `LLM_PROVIDER` | Default AI provider: `gemini`, `openai`, `claude` or `custom` | First provider with a key, else `gemini` |
-| | `LLM_MODEL` | Default model for `LLM_PROVIDER` | Built-in model for the provider |
+| `-udp` | `F1T_UDP_ADDR` | UDP telemetry listener | `0.0.0.0:20777` |
+| `-http` | `F1T_HTTP_ADDR` | Dashboard and API address | `:8080` |
+| `-db` | `F1T_DB_PATH` | SQLite database file | `f1telemetry.db` |
+| `-open-browser` | `F1T_OPEN_BROWSER` | macOS / Linux: open the dashboard in the browser on startup | `false` |
+| `-no-tray` | `F1T_NO_TRAY` | Windows: run with no window or tray icon (stop it from Task Manager) | `false` |
+| `-version` | — | Print the version and exit | |
+| | `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | AI provider keys | *(set in the app)* |
+| | `LLM_PROVIDER` | `gemini`, `openai`, `claude` or `custom` | first provider with a key |
+| | `LLM_MODEL` | Model for `LLM_PROVIDER` | the provider's default |
 
-The database keeps every car's laps, so you can compare yourself with anyone in a session: a 20-car race takes about 6–9 MB. Laps saved by earlier versions take about 7 times more. The first start after updating converts them in the background (about a minute for 1 GB of laps), and the next start gives the space back to the disk. Deleting sessions shrinks the file.
-
-The Live tab shows the UDP port the server listens on and this PC's network addresses (with copy buttons), which is what to enter in the game's telemetry settings on a console. The simulator sends to `127.0.0.1` on the server's `F1T_UDP_ADDR` port. Use `-target` (or `F1T_SIM_TARGET`) to send somewhere else, e.g. `go run ./cmd/simulator -target 192.168.1.20:20777`.
-
-All settings are on one page, opened from the gear in the top bar (`/settings/voice`, `/settings/alerts`, `/settings/ptt`, `/settings/ai`, `/settings/comparator`, `/settings/device`, and `/settings/app` on the PC running the app); the radio, AI and comparator dialogs stay as shortcuts with an "All settings" link.
-
-Settings you change in the dashboard are saved in the database, so every device that opens it (the PC, a tablet on your network) shares them: radio alert rules, the AI provider, model and API keys, the engineer's persona and voice, push-to-talk, and who the lap comparator compares you with by default. When one device saves a change, the other open dashboards reload it right away, and if two devices change the radio alert rules at once, the later save is refused and that dashboard shows the newer rules instead of overwriting them. A save that fails shows a notice. Saved API keys are never sent back to a browser; the settings only show that a key is saved. The settings page's "This device" section holds what stays per browser: volume, radio effects, whether the radio speaks on this screen, UI language (the dashboard downloads only the language on screen), units (km/h or mph, °C or °F, a 24- or 12-hour clock; they start from the browser's region and apply to every speed, temperature and clock time, live views included), which live view opens on a computer and on a phone, the Race Control layout, the AI chat window (compact, large, or docked beside the page) and performance mode. The comparator's chart view and strip layout and the session list's grouping and saved filters are per browser too. A comparator rival saved in a browser by an older version moves to the server the first time it opens.
-
-The API only accepts changes from the dashboard the app serves, so other websites open in your browser can't change settings or use your saved keys. Any device that can open the dashboard can still chat using the saved keys, the same as keys set in `.env`. Settings → App, the app window and the Windows window's own requests (`/api/desktop`) only answer the PC the app runs on, so a phone or tablet on your network can't stop the app or update it.
+Settings changed in the dashboard (radio calls, AI provider and keys, voice, push-to-talk) are saved in the database and shared by every device that opens it. Volume, language, units and layouts stay per browser. Saved API keys are never sent back to a browser, and only the dashboard the app serves can change settings.
 
 ---
 
-## 🤝 Contributing
+## 🛠️ Building from Source
 
-Contributions are welcome! Please check out **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines and PR workflows, and **[GitHub Releases](https://github.com/mgauna-ar/f1game-telemetry-go/releases)** for release history and changelogs.
+Needs [Go 1.26+](https://go.dev/dl/) and [Node.js 22+](https://nodejs.org/).
+
+```bash
+cd frontend && npm install && cd ..
+make build-embedded   # single binary with the dashboard built in: ./bin/f1telemetry
+```
+
+On Windows, `.\run.bat` builds and starts it. No game at hand? `make simulate` (or `.\simulate.bat`) sends a simulated race. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for hot-reload development, the simulator's scenarios and the PR workflow, and **[GitHub Releases](https://github.com/mgauna-ar/f1game-telemetry-go/releases)** for the changelog.
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is an unofficial, open-source community tool developed for educational, telemetry analysis, and league racing purposes. It is **not** affiliated with, endorsed by, or associated with Electronic Arts Inc., Codemasters, or Formula One World Championship Limited. 
+This is an unofficial, open-source community tool. It is **not** affiliated with, endorsed by, or associated with Electronic Arts Inc., Codemasters, or Formula One World Championship Limited.
 
 *F1*, *FORMULA ONE*, *FORMULA 1*, *FIA FORMULA ONE WORLD CHAMPIONSHIP*, and related logos and marks are trademarks of Formula One Licensing B.V. All game titles, screenshots, and car data are property of their respective owners.
 
@@ -253,6 +130,4 @@ This project is an unofficial, open-source community tool developed for educatio
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-The dashboard bundles the [Inter](https://github.com/rsms/inter), [Outfit](https://github.com/Outfitio/Outfit-Fonts) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) fonts (via Fontsource), each under the [SIL Open Font License 1.1](https://openfontlicense.org), so it works offline.
+MIT — see [LICENSE](LICENSE). The dashboard bundles the [Inter](https://github.com/rsms/inter), [Outfit](https://github.com/Outfitio/Outfit-Fonts) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) fonts under the [SIL Open Font License 1.1](https://openfontlicense.org).
