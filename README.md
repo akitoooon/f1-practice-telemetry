@@ -133,4 +133,4 @@ This is an unofficial, open-source community tool. It is **not** affiliated with
 MIT — see [LICENSE](LICENSE). The dashboard bundles the [Inter](https://github.com/rsms/inter), [Outfit](https://github.com/Outfitio/Outfit-Fonts) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) fonts under the [SIL Open Font License 1.1](https://openfontlicense.org).
 
 
-See [MORE PACE Dashboard v1](docs/more-pace-dashboard-v1.md) for the initial analysis workspace and compatibility scope.
+See [MORE PACE Dashboard v2](docs/more-pace-dashboard-v2.md) for the fixed sidebar, dedicated startup Dashboard, recorded analysis and before/after Windows screenshots.

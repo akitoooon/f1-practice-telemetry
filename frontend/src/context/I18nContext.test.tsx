@@ -55,7 +55,7 @@ describe('I18nContext and useI18n Hook', () => {
     expect(screen.getByTestId('current-flag')).toHaveTextContent('🇬🇧');
     expect(screen.getByTestId('nav-history')).toHaveTextContent('Session History');
     expect(screen.getByTestId('nav-comparator')).toHaveTextContent('Lap Comparator');
-    expect(screen.getByTestId('nav-live')).toHaveTextContent('Dashboard');
+    expect(screen.getByTestId('nav-live')).toHaveTextContent('Live');
     expect(screen.getByTestId('common-drivers-interpolated')).toHaveTextContent('20 Drivers');
     expect(screen.getByTestId('common-laps-interpolated')).toHaveTextContent('53 Laps');
   });

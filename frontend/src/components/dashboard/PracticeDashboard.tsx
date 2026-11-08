@@ -1,194 +1,138 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Activity, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useSessionListStore } from '../../store/useSessionListStore';
-import { useSessionStatusStore } from '../../store/useSessionStatusStore';
-import { useTelemetryDataStore } from '../../store/useTelemetryDataStore';
-import { useUnits } from '../../hooks/useUnits';
-import { TIME_CONSTANTS } from '../../constants/f1';
 import { useSlotTelemetry } from '../../hooks/useSlotTelemetry';
 import { useMergedTelemetry } from '../../hooks/useMergedTelemetry';
 import { useLiveRadio } from '../../hooks/useLiveRadio';
 import { useLiveStatus } from '../../hooks/useLiveStatus';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { useRaceEngineerActions, useRaceEngineerState, providerIsReady } from '../../context/RaceEngineerContext';
+import { useUnits } from '../../hooks/useUnits';
+import { useRaceEngineerActions } from '../../context/RaceEngineerContext';
 import { analyzeCorners, type CornerAnalysis } from '../../utils/trackTurns';
-import { formatLapTime } from '../../utils/formatters';
+import { pointsInSpeedUnit } from '../../utils/units';
+import { formatLapTime, formatSignedDelta } from '../../utils/formatters';
 import { invalidateSessionLapData } from '../../utils/sessionDataCache';
 import { buildPath } from '../../router/routes';
-import { navigate } from '../../router/router';
+import { navigate, useRoute } from '../../router/router';
 import { Link } from '../../router/Link';
 import { Panel, PanelHeader } from '../ui/Panel';
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Field';
 import { EmptyState } from '../ui/EmptyState';
-import { CornerTable } from '../lap_comparator/CornerTable';
+import { ComparatorChart } from '../lap_comparator/charts/ComparatorChart';
 import { StripCharts } from '../lap_comparator/charts/StripCharts';
-import { STRIP_TRACE_IDS, STRIP_TRACES } from '../lap_comparator/charts/stripTraces';
+import { DashboardCoach } from './DashboardCoach';
+import { DashboardLiveVehicle } from './DashboardLiveVehicle';
+import { TIME_CONSTANTS } from '../../constants/f1';
 import type { Lap } from '../../types/session';
 import styles from './PracticeDashboard.module.css';
 
 const lapTime = (ms?: number) => ms && ms > 0 ? formatLapTime(ms) : '—';
-const delta = (ms: number | null) => ms === null ? '—' : `${ms > 0 ? '+' : ''}${(ms / TIME_CONSTANTS.MS_PER_SECOND).toFixed(3)} s`;
+const delta = (ms: number | null) => ms === null ? '—' : `${formatSignedDelta(ms)} s`;
 
+/** Dedicated recorded-data workspace. The existing live tools have their own route. */
 export const PracticeDashboard = () => {
   useDocumentTitle('Dashboard');
   useLiveRadio();
   const liveStatus = useLiveStatus();
-  const liveSession = useSessionStatusStore(s => s.session);
   const sessions = useSessionListStore(s => s.sessions);
   const loading = useSessionListStore(s => s.loading);
   const error = useSessionListStore(s => s.error);
-  const [sessionId, setSessionId] = useState<number | ''>('');
+  const route = useRoute();
+  const [initial] = useState(() => route.page === 'dashboard' ? route : undefined);
+  const [sessionId, setSessionId] = useState<number | ''>(initial?.sessionA ?? '');
   const [refreshKey, setRefreshKey] = useState(0);
   const selected = sessions.find(s => s.id === sessionId);
-  const { openChat } = useRaceEngineerActions();
-  const { config, keyStatus } = useRaceEngineerState();
-  const aiReady = providerIsReady(config, keyStatus, config.provider);
   const units = useUnits();
+  const { openChat } = useRaceEngineerActions();
   useEffect(() => { void useSessionListStore.getState().fetchSessions(); }, []);
-
-  const a = useSlotTelemetry({ sessionId, refreshKey, defaultDriverName: 'Lap A', playerCarIndex: selected?.player_car_index });
-  const b = useSlotTelemetry({ sessionId, refreshKey, defaultDriverName: 'Lap B', isSlotB: true,
-    isSameSessionAsSlotA: true, referenceDriver: a.driver, referenceLapId: a.lapId,
-    playerCarIndex: selected?.player_car_index });
-  // Hide previous recordings while the selected session loads or fails.
-  const available = sessionId !== '' && a.loadedSessionId === sessionId && b.loadedSessionId === sessionId
-    && !a.loading && !b.loading && !a.error && !b.error;
-  const lapA = available ? a.selectedLap : undefined;
-  const lapB = available ? b.selectedLap : undefined;
-  const setLapBId = b.setLapId;
+  const [autoSelected, setAutoSelected] = useState(!!initial?.sessionA);
   useEffect(() => {
-    if (available && a.lapId && a.lapId === b.lapId) setLapBId('');
-  }, [available, a.lapId, b.lapId, setLapBId]);
-  const merged = useMergedTelemetry({ lapAId: lapA?.id, lapBId: lapB?.id, lapAObj: lapA, lapBObj: lapB });
+    if (!autoSelected && sessions.length) {
+      const newest = [...sessions].sort((x,y) => Date.parse(y.created_at) - Date.parse(x.created_at))[0];
+      setSessionId(newest.id); setAutoSelected(true);
+    }
+  }, [sessions, autoSelected]);
+
+  const a = useSlotTelemetry({sessionId,refreshKey,preloadLapId:initial?.lapA,defaultDriverName:'Lap A',playerCarIndex:selected?.player_car_index});
+  const b = useSlotTelemetry({sessionId,refreshKey,preloadLapId:initial?.lapB,defaultDriverName:'Lap B',isSlotB:true,
+    isSameSessionAsSlotA:true,referenceDriver:a.driver,referenceLapId:a.lapId,playerCarIndex:selected?.player_car_index});
+  const available = sessionId !== '' && a.loadedSessionId === sessionId && b.loadedSessionId === sessionId && !a.loading && !b.loading && !a.error && !b.error;
+  const lapA = available && a.selectedLap && a.selectedLap.lap_time_ms > 0 ? a.selectedLap : undefined;
+  const lapB = available && b.selectedLap && b.selectedLap.lap_time_ms > 0 && b.lapId !== a.lapId ? b.selectedLap : undefined;
+  const merged = useMergedTelemetry({lapAId:lapA?.id,lapBId:lapB?.id,lapAObj:lapA,lapBObj:lapB});
   const ready = !!lapA && !!lapB && !merged.loading && !merged.error;
-  const corners = useMemo(() => ready ? analyzeCorners(merged.comparisonData, merged.detectedTurns) : [],
-    [ready, merged.comparisonData, merged.detectedTurns]);
   const busy = loading || a.loading || b.loading || merged.loading;
   const dataError = error || a.error || b.error || merged.error;
-  const traces = STRIP_TRACE_IDS.filter(id => merged.comparisonData.some(point =>
-    STRIP_TRACES[id].lines.some(line => typeof point[line.dataKey] === 'number' && Number.isFinite(point[line.dataKey]))));
-  const comparePath = (corner?: CornerAnalysis) => buildPath({ page: 'compare', sessionA: sessionId || undefined,
-    lapA: lapA?.id, lapB: lapB?.id, zoom: corner?.range });
-  const askCoach = (corner?: CornerAnalysis) => {
-    if (!ready) return;
-    // The existing coach resolves its context from the comparison route's IDs.
-    navigate(comparePath(corner));
-    openChat(corner ? `Analyze ${corner.turn.name}. What should I practice based on these two laps?`
-      : 'Compare these two laps and identify the most useful improvement to practice.');
+  const corners = useMemo(() => ready ? analyzeCorners(merged.comparisonData,merged.detectedTurns) : [],[ready,merged.comparisonData,merged.detectedTurns]);
+  const timed = useMemo(() => available ? a.laps.filter(l => l.lap_time_ms > 0 && (selected?.player_car_index == null || l.car_index === selected.player_car_index)) : [],[available,a.laps,selected?.player_car_index]);
+  const valid = timed.filter(l => l.is_valid);
+  const best = valid.length ? Math.min(...valid.map(l => l.lap_time_ms)) : undefined;
+  const last = [...timed].sort((x,y) => y.lap_number - x.lap_number)[0];
+  const sectors = ['sector1_ms','sector2_ms','sector3_ms'] as const;
+  const theoretical = valid.length && sectors.every(k => valid.some(l => l[k] > 0)) ? sectors.reduce((sum,k) => sum + Math.min(...valid.filter(l => l[k] > 0).map(l => l[k])),0) : undefined;
+  const url = buildPath({page:'dashboard',sessionA:sessionId || undefined,lapA:lapA?.id,lapB:lapB?.id,zoom:merged.zoomDomain ?? undefined});
+  // Explicit identifiers keep the information bar and the shared AI provider on the same recording.
+  useEffect(() => {
+    if (route.page === 'dashboard' && (available || sessionId === '')) navigate(url,{replace:true});
+  }, [url,available,sessionId,route.page]);
+  const comparePath = buildPath({page:'compare',sessionA:sessionId || undefined,lapA:lapA?.id,lapB:lapB?.id,zoom:merged.zoomDomain ?? undefined});
+  const pickSession = (value:string) => {
+    setAutoSelected(true); a.setLapId(''); b.setLapId(''); merged.setZoomDomain(null); merged.setHoverDistance(null); setSessionId(value ? Number(value) : '');
+    navigate(buildPath({page:'dashboard',sessionA:value ? Number(value) : undefined}),{replace:true});
   };
-  const chooseSession = (value: string) => {
-    a.setLapId(''); b.setLapId('');
-    merged.setZoomDomain(null); merged.setHoverDistance(null);
-    setSessionId(value ? Number(value) : '');
-  };
-  const refresh = () => {
-    if (sessionId) invalidateSessionLapData([sessionId]);
-    setRefreshKey(key => key + 1);
-    void useSessionListStore.getState().fetchSessions({ force: true });
-  };
-  const lapOptions = (laps: Lap[]) => laps.filter(l => l.lap_time_ms > 0).map(l => <option key={l.id} value={l.id}>
-    Lap {l.lap_number} · {a.participants.find(p => p.car_index === l.car_index)?.name ?? `Car ${l.car_index}`} · {lapTime(l.lap_time_ms)}{l.is_valid ? '' : ' · Invalid'}{l.has_telemetry ? '' : ' · No telemetry'}
+  const refresh = () => { if (sessionId) invalidateSessionLapData([sessionId]); setRefreshKey(x => x+1); void useSessionListStore.getState().fetchSessions({force:true}); };
+  const options = (laps:Lap[], other?:number) => laps.filter(l => l.lap_time_ms > 0).map(l => <option key={l.id} value={l.id} disabled={l.id === other}>
+    L{l.lap_number} · {a.participants.find(p => p.car_index === l.car_index)?.name || `Car ${l.car_index}`} · {lapTime(l.lap_time_ms)}{l.is_valid ? '' : ' · Invalid'}{l.has_telemetry ? '' : ' · No telemetry'}
   </option>);
+  const zoomCorner = (corner:CornerAnalysis) => { merged.setZoomDomain(corner.range); merged.setHoverDistance(corner.turn.distance); };
+  const speedPoints = useMemo(() => pointsInSpeedUnit(merged.chartData, units.prefs.speed), [merged.chartData, units.prefs.speed]);
+  const hasSpeed = ready && merged.chartData.some(p => p.speedA != null || p.speedB != null);
+  const empty = (title:string, description:string) => <EmptyState className={styles.empty} compact title={busy ? 'Loading analysis…' : title} description={dataError || description} tone={dataError ? 'danger' : 'neutral'} />;
 
   return <div className={styles.page}>
-    <header className={styles.heading}>
-      <div><h1>Dashboard</h1><p>Your session, measured.</p></div>
-      <div className={styles.actions}>
-        <span className={styles.feed}><Activity size={14} aria-hidden="true" />Feed: {liveStatus}</span>
-        <Button size="sm" loading={loading} icon={<RefreshCw size={14} />} onClick={refresh}>Refresh sessions</Button>
-      </div>
+    <header className={styles.heading}><div><h1>Dashboard</h1><span>Recorded driving / performance analysis</span></div>
+      <div className={styles.actions}><label className={styles.sessionSelect}><span className="sr-only">Recorded session</span><Select aria-label="Recorded session" value={sessionId} onChange={e => pickSession(e.target.value)} disabled={loading}>
+        <option value="">Select a recorded session</option>{sessions.map(s => <option key={s.id} value={s.id}>{s.track_name} · {s.session_type} · {units.dateAndTime(s.created_at)}</option>)}
+      </Select></label><Button size="sm" loading={loading} icon={<RefreshCw size={13} />} onClick={refresh}>Refresh sessions</Button></div>
     </header>
     <div className={styles.grid}>
-      <Panel className={styles.summary}>
-        <PanelHeader title="Session Summary" level={2} />
-        <label className={styles.field}>Recorded session
-          <Select value={sessionId} onChange={e => chooseSession(e.target.value)} disabled={loading}>
-            <option value="">Select a recorded session</option>
-            {sessions.map(s => <option key={s.id} value={s.id}>{s.track_name} · {s.session_type} · {units.dateAndTime(s.created_at)}</option>)}
-          </Select>
-        </label>
-        {error ? <EmptyState compact tone="danger" title="Sessions unavailable" description={error} /> : selected ? <>
-          <div className={styles.sessionIdentity}><strong>{selected.track_name}</strong><span>{selected.session_type} · F1 {selected.packet_format}</span></div>
-          <dl className={styles.stats}>
-            <div><dt>Recorded laps / all cars</dt><dd>{available ? a.laps.length : '—'}</dd></div>
-            <div><dt>Lap A</dt><dd>{lapTime(lapA?.lap_time_ms)}</dd></div>
-            <div><dt>A − B</dt><dd className={styles.accent}>{delta(ready ? merged.totalDeltaMs : null)}</dd></div>
-          </dl>
-          <Link href={buildPath({page: 'history', sessionId: selected.id, tab: 'story'})}>Open session ↗</Link>
-        </> : <EmptyState compact title={loading ? 'Loading recorded sessions…' : 'No session selected'} description="Choose a recording to review laps, corners and telemetry. New sessions are recorded when the game sends data." />}
-      </Panel>
-      <Panel className={styles.coach}>
-        <PanelHeader title="AI Coach" level={2} />
-        <span className={styles.eyebrow}>{aiReady ? 'Provider configured' : 'Setup required'}</span>
-        <h3>{ready ? 'Review your comparison' : 'Build your next practice focus'}</h3>
-        <p>{ready ? 'Ask the coach to analyze the selected laps. Advice is generated only when requested.' : 'Select two recorded laps to give the coach a comparison to analyze.'}</p>
-        <div className={styles.actions}>
-          <Button size="sm" variant="primary" disabled={!ready || !aiReady} onClick={() => askCoach()}>Analyze selected laps</Button>
-          <Button size="sm" onClick={() => openChat()}>Open coach</Button>
-          {!aiReady && <Link href="/settings/ai">Configure AI</Link>}
-        </div>
-        <p className={styles.note}>Live radio and push-to-talk remain available through the race engineer.</p>
-      </Panel>
-      <Panel className={styles.comparison}>
-        <PanelHeader title="Lap Comparison" level={2} actions={<Link href={comparePath()}>Full comparison ↗</Link>} />
-        <div className={styles.lapPickers}>
-          <label className={styles.field}>Lap A · reference
-            <Select value={available ? a.lapId : ''} disabled={!available} onChange={e => { a.setLapId(e.target.value ? Number(e.target.value) : ''); merged.setZoomDomain(null); }}>
-              <option value="">Select lap A</option>{available && lapOptions(a.laps)}
-            </Select>
-          </label>
-          <label className={styles.field}>Lap B · comparison
-            <Select value={available ? b.lapId : ''} disabled={!available} onChange={e => { b.setLapId(e.target.value ? Number(e.target.value) : ''); merged.setZoomDomain(null); }}>
-              <option value="">Select lap B</option>{available && lapOptions(b.laps)}
-            </Select>
-          </label>
-        </div>
-        {dataError ? <EmptyState compact tone="danger" title="Analysis unavailable" description={dataError} /> : ready ? <dl className={styles.stats}>
-          <div><dt>Lap A · {a.driverName}</dt><dd>{lapTime(lapA.lap_time_ms)}</dd></div>
-          <div><dt>Lap B · {b.driverName}</dt><dd>{lapTime(lapB.lap_time_ms)}</dd></div>
-          <div><dt>Sector 1 · A − B</dt><dd>{delta(merged.s1Delta)}</dd></div>
-          <div><dt>Sector 2 · A − B</dt><dd>{delta(merged.s2Delta)}</dd></div>
-          <div><dt>Sector 3 · A − B</dt><dd>{delta(merged.s3Delta)}</dd></div>
-        </dl> : <EmptyState compact title={busy ? 'Loading analysis…' : 'Two laps make a comparison'} description="Select a recorded session and two laps. Positive delta means lap A is slower than lap B." />}
-      </Panel>
-      <section className={styles.corners} aria-label="Corner Delta">
-        <PanelHeader title="Corner Delta" level={2} />
-        {corners.length ? <CornerTable corners={corners} nameA={a.driverName} nameB={b.driverName} zoomDomain={merged.zoomDomain}
-          onZoom={c => { merged.setZoomDomain(c.range); merged.setHoverDistance(c.turn.distance); }} onAskAi={c => askCoach(c)} />
-          : <EmptyState compact title={busy ? 'Loading corner analysis…' : 'No corner analysis available'} description={dataError || 'Select two laps with recorded telemetry. Detected corners and time differences appear here.'} tone={dataError ? 'danger' : 'neutral'} />}
-      </section>
-      <Panel className={styles.telemetry}>
-        <PanelHeader title="Telemetry Comparison" level={2} subtitle="Distance-aligned traces · drag to zoom" actions={merged.zoomDomain && <Button size="sm" onClick={() => merged.setZoomDomain(null)}>Reset zoom</Button>} />
-        {ready && traces.length > 0 ? <StripCharts chartData={merged.chartData} nameA={a.driverName} nameB={b.driverName}
-          formatA={selected?.packet_format} formatB={selected?.packet_format} available={traces}
-          sector1Distance={null} sector2Distance={null} hoverDistance={merged.hoverDistance} onMouseMove={merged.handleMouseMove}
-          onHoverDistanceChange={merged.setHoverDistance} onZoomDomainChange={merged.setZoomDomain} />
-          : <EmptyState icon={<Activity size={24} />} title={busy ? 'Loading telemetry…' : 'No telemetry to compare'} description={dataError || 'Speed, throttle, brake and other recorded channels appear after selecting laps with telemetry.'} tone={dataError ? 'danger' : 'neutral'} />}
-      </Panel>
-      <section className={styles.vehicle} aria-label="Vehicle & Session Status">
-        <PanelHeader title="Vehicle & Session Status" level={2} />
-        <p className={styles.note}>Live feed · {liveStatus}. Recorded analysis above is independent of the live vehicle.</p>
-        {liveStatus === 'live' && liveSession ? <VehicleValues /> : <EmptyState compact title={liveStatus === 'stale' ? 'Telemetry paused' : 'Waiting for vehicle data'} description="Start a game session and enable UDP telemetry to inspect the current vehicle. No current vehicle values are shown without an active feed." />}
-      </section>
+      <div className={styles.topRow}>
+        <Panel className={styles.summary}><PanelHeader title="Session Summary" level={2} className={styles.panelHeader} actions={selected && <Link href={`/history/${selected.id}`}>Open session ↗</Link>} />
+          {selected && available ? <><p className={styles.meta}>{selected.track_name} · {selected.session_type} <span>{selected.player_car_index == null ? 'All cars' : 'Your recorded laps'}</span></p>
+            <dl className={styles.summaryStats}><div><dt>Best valid lap</dt><dd>{lapTime(best)}</dd></div><div><dt>Theoretical · sectors</dt><dd>{lapTime(theoretical || undefined)}</dd></div><div><dt>Last timed lap</dt><dd>{lapTime(last?.lap_time_ms)}</dd></div></dl>
+            <table className={styles.sectorTable}><caption className="sr-only">Lap A against lap B sector times</caption><thead><tr><th>Sector</th><th>Lap A</th><th>Lap B</th><th>A − B</th></tr></thead><tbody>{sectors.map((k,i) => <tr key={k}><th>S{i+1}</th><td>{lapA?.[k] ? `${(lapA[k]/TIME_CONSTANTS.MS_PER_SECOND).toFixed(3)}` : '—'}</td><td>{lapB?.[k] ? `${(lapB[k]/TIME_CONSTANTS.MS_PER_SECOND).toFixed(3)}` : '—'}</td><td>{delta(lapA?.[k] && lapB?.[k] ? lapA[k]-lapB[k] : null)}</td></tr>)}</tbody></table>
+          </> : empty(error ? 'Sessions unavailable' : 'No session selected','Record a session in the game or choose a saved recording.')}
+        </Panel>
+        <Panel className={styles.coach}><PanelHeader title="AI Coach" level={2} className={styles.panelHeader} subtitle="Recorded evidence / practice priorities" /><DashboardCoach lapA={ready ? lapA?.id : undefined} lapB={ready ? lapB?.id : undefined} /></Panel>
+      </div>
+      <div className={styles.analysisRow}>
+        <Panel className={styles.comparison}><PanelHeader title="Lap Comparison" level={2} className={styles.panelHeader} actions={<Link href={comparePath}>Open analysis ↗</Link>} />
+          <div className={styles.lapPickers}>
+            <label>Lap A · reference<Select aria-label="Lap A · reference" value={lapA?.id || ''} disabled={!available} onChange={e => {a.setLapId(e.target.value ? Number(e.target.value) : '');merged.setZoomDomain(null);}}><option value="">Select lap A</option>{available && options(a.laps,lapB?.id)}</Select></label>
+            <label>Lap B · comparison<Select aria-label="Lap B · comparison" value={lapB?.id || ''} disabled={!available} onChange={e => {b.setLapId(e.target.value ? Number(e.target.value) : '');merged.setZoomDomain(null);}}><option value="">Select lap B</option>{available && options(b.laps,lapA?.id)}</Select></label>
+          </div>
+          {ready && <div className={styles.duel}><span>A {lapTime(lapA.lap_time_ms)}</span><span>B {lapTime(lapB.lap_time_ms)}</span><strong>{delta(merged.totalDeltaMs)}</strong></div>}
+          {hasSpeed ? <div className={styles.speedPlot}><ComparatorChart chartData={speedPoints} nameA={`A · L${lapA?.lap_number}`} nameB={`B · L${lapB?.lap_number}`} title={`Speed · ${units.speedUnit}`} height={175} dataKeyA="speedA" dataKeyB="speedB" sector1Distance={null} sector2Distance={null} hoverDistance={merged.hoverDistance} onMouseMove={merged.handleMouseMove} onHoverDistanceChange={merged.setHoverDistance} /></div>
+            : empty(ready ? 'No speed telemetry recorded' : 'Two laps make a comparison','Select two different timed laps. Positive delta means lap A is slower.')}
+        </Panel>
+        <Panel className={styles.corners}><PanelHeader title="Corner Delta" level={2} className={styles.panelHeader} subtitle="A − B · select a corner to inspect" />
+          {corners.length ? <div className={styles.cornerList}><table><caption className="sr-only">Measured corner time differences</caption><thead><tr><th>Corner</th><th>A − B</th><th>Review</th></tr></thead><tbody>{corners.map(c => <tr key={c.turn.name} data-selected={merged.zoomDomain?.[0] === c.range[0] || undefined}><th><button type="button" onClick={() => zoomCorner(c)} aria-label={`Zoom ${c.turn.name}`}>{c.turn.name}</button></th><td>{c.timeDelta == null ? '—' : delta(c.timeDelta*TIME_CONSTANTS.MS_PER_SECOND)}</td><td><button type="button" aria-label={`Ask coach about ${c.turn.name}`} onClick={() => {zoomCorner(c); openChat(`Analyze ${c.turn.name} using these selected laps. State any missing telemetry.`);}}>Ask coach ↗</button></td></tr>)}</tbody></table></div>
+            : empty('No corner analysis available','Corner differences appear when recorded telemetry is available.')}
+        </Panel>
+      </div>
+      <div className={styles.analysisRow}>
+        <Panel className={styles.telemetry}><PanelHeader title="Telemetry Comparison" level={2} className={styles.panelHeader} subtitle="A in red / B in white · distance aligned" actions={merged.zoomDomain && <Button size="sm" onClick={() => merged.setZoomDomain(null)}>Reset zoom</Button>} />
+          {ready && hasSpeed ? <StripCharts compact chartData={merged.chartData} nameA="Lap A" nameB="Lap B" formatA={selected?.packet_format} formatB={selected?.packet_format} available={['speed','throttle','brake','gear']}
+            sector1Distance={null} sector2Distance={null} hoverDistance={merged.hoverDistance} onMouseMove={merged.handleMouseMove} onHoverDistanceChange={merged.setHoverDistance} onZoomDomainChange={merged.setZoomDomain} />
+            : empty('No telemetry to compare','Speed, throttle, brake and gear traces appear for laps with recorded samples.')}
+        </Panel>
+        <Panel className={styles.vehicle}><PanelHeader title="Vehicle & Session Status" level={2} className={styles.panelHeader} />
+          <dl className={styles.statusList}><div><dt>Telemetry connection</dt><dd>{liveStatus}</dd></div><div><dt>Selected recording</dt><dd>{selected?.track_name || '—'}</dd></div><div><dt>Session type</dt><dd>{selected?.session_type || '—'}</dd></div><div><dt>Game format</dt><dd>{selected?.packet_format ? `F1 ${selected.packet_format}` : '—'}</dd></div><div><dt>AI difficulty</dt><dd>{selected && selected.ai_difficulty > 0 ? selected.ai_difficulty : '—'}</dd></div><div><dt>Timed laps · selected driver</dt><dd>{available ? timed.length : '—'}</dd></div><div><dt>Recorded weather</dt><dd>{selected?.weather || '—'}</dd></div><div><dt>Assists</dt><dd>Not recorded</dd></div></dl>
+          {liveStatus === 'live' && <DashboardLiveVehicle />}
+          <p className={styles.note}>Recorded session information. Open Live for current vehicle, tyres, fuel and powertrain.</p><Link href="/live/dashboard">Open live vehicle ↗</Link>
+        </Panel>
+      </div>
     </div>
-
   </div>;
-};
-
-/** Read only channels actually received for the player's car; absent packets stay empty. */
-const VehicleValues = () => {
-  const lap = useTelemetryDataStore(s => s.allLaps[s.playerCarIndex]);
-  const status = useTelemetryDataStore(s => s.allCarStatus[s.playerCarIndex]);
-  const telemetry = useTelemetryDataStore(s => s.allTelemetry[s.playerCarIndex]);
-  const session = useSessionStatusStore(s => s.session);
-  const units = useUnits();
-  return <dl className={styles.stats}>
-    <div><dt>Current lap</dt><dd>{lap?.CurrentLapNum ?? '—'}</dd></div>
-    <div><dt>Last lap</dt><dd>{lapTime(lap?.LastLapTimeInMS)}</dd></div>
-    <div><dt>Speed</dt><dd>{units.speed(telemetry?.Speed, 0, '—')}</dd></div>
-    <div><dt>Fuel in tank</dt><dd>{status ? `${status.FuelInTank.toFixed(1)} kg` : '—'}</dd></div>
-    <div><dt>Tyre age</dt><dd>{status ? `${status.TyresAgeLaps} laps` : '—'}</dd></div>
-    <div><dt>Track temperature</dt><dd>{units.temperature(session?.TrackTemperature, 0, '—')}</dd></div>
-  </dl>;
 };

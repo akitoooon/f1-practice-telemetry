@@ -4,11 +4,11 @@ import App from './App';
 import { api } from './utils/apiClient';
 import { useRaceEngineerActions, useRaceEngineerStream } from './context/RaceEngineerContext';
 
-// The logo takes no props, so it renders exactly when AppContent (its parent) renders.
+// The information bar renders with AppContent, independently of streamed chat chunks.
 const renders = vi.hoisted(() => ({ appContent: 0, chat: 0 }));
 
-vi.mock('./components/F1TelemetryLogo', () => ({
-  F1TelemetryLogo: () => {
+vi.mock('./components/workspace/WorkspaceSessionBar', () => ({
+  WorkspaceSessionBar: () => {
     renders.appContent++;
     return <span data-testid="logo" />;
   },
@@ -87,6 +87,7 @@ describe('AppContent re-renders', () => {
 
   it('does not re-render AppContent while a chat reply streams in', async () => {
     const streamSpy = vi.spyOn(api, 'stream').mockImplementation(async () => slowChatReply());
+    window.history.replaceState(null,'','/history');
     render(<App />);
     await screen.findByTestId('session-history-view');
     // Let the startup requests (settings, version, endpoint) settle first.

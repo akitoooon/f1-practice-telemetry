@@ -6,7 +6,7 @@ export const nav = {
     history: 'Session History',
     comparator: 'Lap Comparator',
     progress: 'Progress',
-    live: 'Dashboard',
+    live: 'Live',
   },
   /** On narrow screens */
   tabsShort: {

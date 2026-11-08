@@ -31,6 +31,8 @@ import { useUnits } from '../../../hooks/useUnits';
 import { pointsInSpeedUnit } from '../../../utils/units';
 
 export interface StripChartsProps {
+  /** Compact workspace strips keep their layout local to the Dashboard. */
+  compact?: boolean;
   chartData: MergedTelemetryPoint[];
   nameA: string;
   nameB: string;
@@ -73,6 +75,7 @@ function pointAt(points: MergedTelemetryPoint[], distance: number | null): Merge
  * strips move up and down or hide, and the layout is remembered on this device.
  */
 export const StripCharts: React.FC<StripChartsProps> = ({
+  compact = false,
   chartData: metricData,
   nameA,
   nameB,
@@ -90,10 +93,10 @@ export const StripCharts: React.FC<StripChartsProps> = ({
   const units = useUnits();
   // Speeds in this device's unit; every other trace is unitless or the same everywhere
   const chartData = useMemo(() => pointsInSpeedUnit(metricData, units.prefs.speed), [metricData, units.prefs.speed]);
-  const [layout, setLayout] = useState<StripLayout>(loadStripLayout);
+  const [layout, setLayout] = useState<StripLayout>(() => compact ? { ...DEFAULT_STRIP_LAYOUT, hidden: [] } : loadStripLayout());
   const updateLayout = (next: StripLayout) => {
     setLayout(next);
-    saveStripLayout(next);
+    if (!compact) saveStripLayout(next);
   };
 
   const visible = layout.order.filter((id) => available.includes(id) && !layout.hidden.includes(id));
@@ -146,7 +149,7 @@ export const StripCharts: React.FC<StripChartsProps> = ({
   const lastVisible = visible[visible.length - 1];
 
   return (
-    <div className={styles.wrap} data-dragging={dragging || undefined}>
+    <div className={styles.wrap} data-compact={compact || undefined} data-dragging={dragging || undefined}>
       <p className={styles.hint}>{t('comparator.strips.dragHint')}</p>
       <ul className={styles.strips} aria-label={t('comparator.strips.label')}>
         {visible.map((id, index) => {

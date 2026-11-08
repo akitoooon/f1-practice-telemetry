@@ -3,6 +3,8 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
+  /** Identifiers used for this reply, so the Dashboard never displays advice for other laps. */
+  context?: import('./generated/ai').ChatContextRequest;
   errorCode?: string;
   errorProvider?: string;
   errorRaw?: string;
