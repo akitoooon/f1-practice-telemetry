@@ -184,8 +184,8 @@
 
   /* ── Type ────────────────────────────────────────────────────────────── */
   /* Self-hosted variable fonts (styles/index.css): the same digits on every OS, and offline */
-  --font-sans: 'Inter Variable', system-ui, sans-serif;
-  --font-display: 'Inter Variable', system-ui, sans-serif;
+  --font-sans: 'Inter Variable', 'Yu Gothic UI', 'Meiryo', system-ui, sans-serif;
+  --font-display: 'Inter Variable', 'Yu Gothic UI', 'Meiryo', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --font-size-2xs: 0.625rem; /* micro badges */

@@ -11,7 +11,8 @@ import {
   type ChatMessage,
 } from '../context/RaceEngineerContext';
 import type { AIChatRequest, ChatContextRequest } from '../types/ai';
-import { resolveRadioLanguage } from '../utils/chatContext';
+import { useDevicePreferencesStore } from '../store/useDevicePreferencesStore';
+import { resolveAIResponseLanguage } from '../utils/chatContext';
 
 export interface UseAIChatStreamProps {
   config: AIConfig;
@@ -158,7 +159,7 @@ export const useAIChatStream = ({
           provider: cfg.provider,
           model: cfg.model,
           persona: radioState.persona,
-          language: resolveRadioLanguage(radioState.radioLanguage, latest.current.locale),
+          language: resolveAIResponseLanguage(useDevicePreferencesStore.getState().aiResponseLanguage, latest.current.locale),
           messages: apiMessages,
           context,
         };

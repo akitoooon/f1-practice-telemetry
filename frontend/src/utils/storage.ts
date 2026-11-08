@@ -19,6 +19,7 @@ export type KnownStorageKey =
   | 'f1_live_view_mode_phone'
   | 'f1_race_control_layout'
   | 'f1_units'
+  | 'f1_ai_response_language'
   | 'f1_performance_mode'
   | 'f1_performance_mode_driver'
   | 'f1_ai_engineer_config'

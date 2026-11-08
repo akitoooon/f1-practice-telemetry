@@ -1,5 +1,6 @@
 import { RADIO_PHRASE_CONSTANTS, type RadioPersona } from '../constants/f1';
-import type { LocaleCode } from '../locales';
+// Voice locales are intentionally independent from the interface locales.
+type LocaleCode = 'en' | 'es';
 import type { TemperatureUnit } from './units';
 import {
   box_timing_phrases as enBox,

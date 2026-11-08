@@ -1,3 +1,4 @@
+import { useI18n } from './context/I18nContext';
 import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { LayoutDashboard, Radio, ChartNoAxesCombined, History, Bot, Settings, ArrowUpRight } from 'lucide-react';
 import { AppProviders } from './AppProviders';
@@ -35,17 +36,18 @@ const Dashboard = lazy(() => import('./components/Dashboard').then(m => ({ defau
 const Live = lazy(() => import('./components/RaceControlDashboard').then(m => ({ default: m.RaceControlDashboard })));
 const ReleaseNotesModal = lazy(() => import('./components/ReleaseNotesModal').then(m => ({ default: m.ReleaseNotesModal })));
 
-const NAV_ITEMS: ReadonlyArray<{page: Page; label: string; icon: typeof Bot}> = [
-  {page:'dashboard', label:'Dashboard', icon:LayoutDashboard},
-  {page:'live', label:'Live', icon:Radio},
-  {page:'compare', label:'Analysis', icon:ChartNoAxesCombined},
-  {page:'history', label:'Lap History', icon:History},
-  {page:'coach', label:'AI Coach', icon:Bot},
-  {page:'settings', label:'Settings', icon:Settings},
+const NAV_ITEMS: ReadonlyArray<{page: Page; icon: typeof Bot}> = [
+  {page:'dashboard', icon:LayoutDashboard},
+  {page:'live', icon:Radio},
+  {page:'compare', icon:ChartNoAxesCombined},
+  {page:'history', icon:History},
+  {page:'coach', icon:Bot},
+  {page:'settings', icon:Settings},
 ];
 const DISMISSED_UPDATE_KEY = 'f1_telemetry_dismissed_update';
 
 function AppContent() {
+  const { t } = useI18n();
   const route = useRoute();
   const url = useUrl();
   const activePage = route.page;
@@ -88,15 +90,15 @@ function AppContent() {
         <strong>MORE <span>PACE</span></strong><small>TELEMETRY & PERFORMANCE</small>
       </Link>
       <nav className={styles.navigation} aria-label="Main Navigation">
-        {NAV_ITEMS.map(({page,label,icon:Icon}) => <Link key={page} href={href(page)}
+        {NAV_ITEMS.map(({page,icon:Icon}) => <Link key={page} href={href(page)}
           aria-current={(activePage === page || page === 'compare' && activePage === 'progress') ? 'page' : undefined}>
-          <Icon size={17} aria-hidden="true" /><span>{label}</span>
+          <Icon size={17} aria-hidden="true" /><span>{t(`workspace.nav.${page}`)}</span>
           {page === 'live' && (liveStatus === LIVE_STATUS.LIVE || liveStatus === LIVE_STATUS.STALE) &&
             <span className={styles.liveBadge} data-testid="nav-live-badge">{liveStatus === LIVE_STATUS.STALE ? 'NO SIGNAL' : 'LIVE'}</span>}
         </Link>)}
       </nav>
       <div className={styles.sidebarFooter}>
-        <span className={styles.connection}><i data-state={liveStatus} />{liveStatus === 'live' ? 'Receiving telemetry' : liveStatus === 'listening' ? 'UDP listening' : liveStatus === 'stale' ? 'Telemetry paused' : 'Server offline'}</span>
+        <span className={styles.connection}><i data-state={liveStatus} />{liveStatus === 'live' ? t('workspace.receivingTelemetry') : liveStatus === 'listening' ? t('workspace.udpListening') : liveStatus === 'stale' ? t('workspace.telemetryPaused') : t('workspace.serverOffline')}</span>
         <span className={styles.port}>UDP {udpPort}</span>
         <div className={styles.utilities}>
           <button type="button" data-testid="nav-version-badge" data-channel={channel} aria-label="About & Version Details"
@@ -105,7 +107,7 @@ function AppContent() {
           <PerformanceModeToggle />
         </div>
         {release?.update_available && dismissedVersion !== release.latest_version && <button type="button" data-testid="nav-update-chip" aria-label="Update Available" data-prerelease={release.is_prerelease || undefined}
-          onClick={() => setReleaseOpen(true)}>Update available <ArrowUpRight size={12} /></button>}
+          onClick={() => setReleaseOpen(true)}>{t('nav.updateAvailable')} <ArrowUpRight size={12} /></button>}
       </div>
     </aside>
     <div className={styles.workspace}>

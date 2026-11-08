@@ -15,7 +15,7 @@ import {
   TRAFFIC_CALL_CATEGORIES,
 } from '../constants/radioAlertCategories';
 import type { RadioPersona } from '../constants/f1';
-import type { LocaleCode } from '../locales';
+type LocaleCode = 'en' | 'es';
 import type {
   DirectiveValues,
   EngineerAlertKey,

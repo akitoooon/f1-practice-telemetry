@@ -8,13 +8,14 @@ const STORAGE_KEY = 'f1_telemetry_language';
 
 function detectDefaultLocale(): LocaleCode {
   const saved = storage.get<string>(STORAGE_KEY, '');
-  if (saved === 'en' || saved === 'es') {
+  if (saved === 'en' || saved === 'es' || saved === 'ja') {
     return saved;
   }
 
   try {
     if (typeof navigator !== 'undefined' && navigator.language) {
       const navLang = navigator.language.toLowerCase();
+      if (navLang.startsWith('ja')) return 'ja';
       if (navLang.startsWith('es')) {
         return 'es';
       }

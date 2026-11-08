@@ -10,6 +10,21 @@ import (
 
 // BuildSystemPrompt constructs a rich system prompt tailored for an elite F1 Race Engineer based on context mode, persona, and language.
 func BuildSystemPrompt(tc *TelemetryAnalysisContext, persona, language string) string {
+	prompt := buildSystemPrompt(tc, persona, language)
+	// The text setting takes priority over the input language and persona language.
+	// Voice requests keep their existing English/Spanish catalogs and are separate.
+	switch locales.NormalizeLocale(language) {
+	case "ja":
+		return prompt + "\nRESPONSE LANGUAGE (takes precedence over earlier language instructions): Japanese. 簡潔で自然な日本語で回答する。ABS、TC、ERSなどの略語と一般的なモータースポーツ用語を維持する。計測された事実と推測を明確に区別し、取得していない数値を作らない。根拠が不足する場合は断定しない。推定改善時間には計算根拠と不確実性を明記する。次の走行で試せる具体的な改善方法を優先する。\n"
+	case "en":
+		return prompt + "\nRESPONSE LANGUAGE (takes precedence over earlier language instructions): Respond in English, regardless of the user's language.\n"
+	case "es":
+		return prompt + "\nRESPONSE LANGUAGE (takes precedence over earlier language instructions): Respond in Spanish, regardless of the user's language.\n"
+	}
+	return prompt
+}
+
+func buildSystemPrompt(tc *TelemetryAnalysisContext, persona, language string) string {
 	if tc == nil {
 		tc = &TelemetryAnalysisContext{ContextMode: ContextModeComparator}
 	}

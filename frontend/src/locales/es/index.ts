@@ -1,3 +1,5 @@
+import { language } from './language';
+import { workspace } from './workspace';
 import type { LocaleDictionary } from '../types';
 import { common } from './common';
 import { nav } from './nav';
@@ -11,6 +13,8 @@ import { desktop } from './desktop';
 
 /** The Spanish dictionary, loaded only when Spanish is the language on screen. */
 export const es: LocaleDictionary = {
+  language,
+  workspace,
   common,
   nav,
   history,
