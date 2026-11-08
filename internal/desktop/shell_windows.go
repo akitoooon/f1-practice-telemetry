@@ -18,6 +18,8 @@ import (
 )
 
 const (
+	// legacyAppName preserves existing Windows storage and autostart identity.
+	legacyAppName = "F1 Telemetry"
 	// windowClass names the app's windows for Windows. The installer finds a running copy by it
 	// (build/windows/installer.nsi): change both together.
 	windowClass = "F1TelemetryWindow"

@@ -3,9 +3,6 @@ package desktop
 // appName is the name the windows, the tray, its tooltip and dialogs show.
 const appName = "MORE PACE"
 
-// legacyAppName preserves existing Windows storage and autostart identity.
-const legacyAppName = "F1 Telemetry"
-
 // text is what the tray, the windows' titles and dialogs say, in the user's Windows display
 // language.
 type text struct {
