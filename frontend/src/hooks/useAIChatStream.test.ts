@@ -1,3 +1,7 @@
+import React from 'react';
+import { I18nProvider } from '../context/I18nProvider';
+import { useDevicePreferencesStore, resetDevicePreferences } from '../store/useDevicePreferencesStore';
+import { useRadioSettingsStore } from '../store/useRadioSettingsStore';
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAIChatStream } from './useAIChatStream';
@@ -43,6 +47,8 @@ describe('useAIChatStream Hook', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    localStorage.clear();
+    resetDevicePreferences();
   });
 
   it('initializes with a welcome assistant message', () => {
@@ -70,6 +76,20 @@ describe('useAIChatStream Hook', () => {
     const assistantMsg = result.current.messages[2];
     expect(assistantMsg.errorCode).toBe('MISSING_API_KEY');
     expect(assistantMsg.canRetry).toBe(false);
+  });
+
+  it.each([
+    ['ja', 'auto', 'ja'], ['en', 'ja', 'ja'], ['ja', 'en', 'en'], ['es', 'auto', 'es'],
+  ] as const)('sends %s UI / %s text as %s without changing Spanish radio', async (ui, preference, expected) => {
+    localStorage.setItem('f1_telemetry_language', ui);
+    useDevicePreferencesStore.getState().setAIResponseLanguage(preference);
+    useRadioSettingsStore.setState({ radioLanguage: 'es' });
+    const spy = vi.spyOn(api, 'stream').mockResolvedValueOnce(createMockSSEResponse(['data: [DONE]\n\n']));
+    const wrapper = ({children}: {children: React.ReactNode}) => React.createElement(I18nProvider, null, children);
+    const { result } = renderHook(() => useAIChatStream(defaultProps), { wrapper });
+    await act(async () => { await result.current.sendMessage('Analyze my lap'); });
+    expect(spy).toHaveBeenCalledWith('/api/ai/chat', expect.objectContaining({language: expected, context: defaultProps.buildChatContext()}), expect.any(AbortSignal));
+    expect(useRadioSettingsStore.getState().radioLanguage).toBe('es');
   });
 
   it('streams response chunks and updates assistant message content', async () => {

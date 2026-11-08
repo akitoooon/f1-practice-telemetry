@@ -4,7 +4,7 @@ import type { LocaleDictionary } from './types';
 export { en };
 export type { LocaleDictionary };
 
-export type LocaleCode = 'en' | 'es';
+export type LocaleCode = 'en' | 'es' | 'ja';
 
 export interface LocaleInfo {
   code: LocaleCode;
@@ -17,6 +17,7 @@ export interface LocaleInfo {
 export const availableLocales: LocaleInfo[] = [
   { code: 'en', name: 'English', label: 'English', countryCode: 'gb', flag: '🇬🇧' },
   { code: 'es', name: 'Español (Latinoamérica)', label: 'Español (Latinoamérica)', countryCode: 'ar', flag: '🇦🇷' },
+  { code: 'ja', name: 'Japanese', label: 'Japanese', countryCode: 'jp', flag: '🇯🇵' },
 ];
 
 /**
@@ -25,6 +26,7 @@ export const availableLocales: LocaleInfo[] = [
  */
 const loaders: Record<LocaleCode, () => Promise<LocaleDictionary>> = {
   en: async () => en,
+  ja: () => import('./ja').then(m => m.ja),
   es: () => import('./es').then((m) => m.es),
 };
 

@@ -114,3 +114,8 @@ export function resolveRadioLanguage(radioLanguage: string, uiLocale: string): '
   if (radioLanguage === RADIO_LANGUAGES.AUTO) return uiLocale === 'es' ? 'es' : 'en';
   return radioLanguage === RADIO_LANGUAGES.ES ? 'es' : 'en';
 }
+
+/** Text replies are independent of the radio/STT/TTS language. */
+export function resolveAIResponseLanguage(preference: 'auto' | 'ja' | 'en', uiLocale: string): 'ja' | 'en' | 'es' {
+  return preference === 'auto' ? uiLocale === 'ja' ? 'ja' : uiLocale === 'es' ? 'es' : 'en' : preference;
+}

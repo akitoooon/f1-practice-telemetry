@@ -8,7 +8,16 @@ import { browserLocale, defaultUnitsForLocale, normalizeUnits, type UnitPreferen
 /** Units saved on this device; until one is changed they follow the browser's locale. */
 export const STORAGE_KEY_UNITS = 'f1_units';
 
+export type AIResponseLanguage = 'auto' | 'ja' | 'en';
+export const STORAGE_KEY_AI_RESPONSE_LANGUAGE = 'f1_ai_response_language';
+const loadAIResponseLanguage = (): AIResponseLanguage => {
+  const saved = storage.get<string>(STORAGE_KEY_AI_RESPONSE_LANGUAGE, 'auto');
+  return saved === 'ja' || saved === 'en' ? saved : 'auto';
+};
+
 export interface DevicePreferencesState {
+  aiResponseLanguage: AIResponseLanguage;
+  setAIResponseLanguage: (language: AIResponseLanguage) => void;
   /** The AI chat opens in its wide reading view. */
   chatExpanded: boolean;
   /** The open AI chat docks beside the page instead of floating over it, where the window is wide enough. */
@@ -32,6 +41,7 @@ const loadUnits = (): UnitPreferences =>
   normalizeUnits(storage.get<unknown>(STORAGE_KEY_UNITS, null), defaultUnitsForLocale(browserLocale()));
 
 const loadState = () => ({
+  aiResponseLanguage: loadAIResponseLanguage(),
   chatExpanded: storage.get<boolean>(STORAGE_KEY_AI_EXPANDED, false) === true,
   chatDocked: storage.get<boolean>(STORAGE_KEY_AI_DOCKED, false) === true,
   raceControlLayout: loadLayout(),
@@ -45,6 +55,10 @@ const loadState = () => ({
  */
 export const useDevicePreferencesStore = create<DevicePreferencesState>((set) => ({
   ...loadState(),
+  setAIResponseLanguage: (aiResponseLanguage) => {
+    storage.set(STORAGE_KEY_AI_RESPONSE_LANGUAGE, aiResponseLanguage);
+    set({ aiResponseLanguage });
+  },
   setChatExpanded: (chatExpanded) => {
     storage.set(STORAGE_KEY_AI_EXPANDED, chatExpanded);
     set({ chatExpanded });
@@ -67,6 +81,7 @@ export const useDevicePreferencesStore = create<DevicePreferencesState>((set) =>
 
 /** The keys these choices are saved under. */
 export const DEVICE_PREFERENCE_KEYS = [
+  STORAGE_KEY_AI_RESPONSE_LANGUAGE,
   STORAGE_KEY_AI_EXPANDED,
   STORAGE_KEY_AI_DOCKED,
   STORAGE_KEY_RACE_CONTROL_LAYOUT,
@@ -81,6 +96,7 @@ export function reloadDevicePreferences(): void {
 /** Back to the defaults, for tests. */
 export function resetDevicePreferences(): void {
   useDevicePreferencesStore.setState({
+    aiResponseLanguage: 'auto',
     chatExpanded: false,
     chatDocked: false,
     raceControlLayout: RACE_CONTROL_LAYOUTS.GRID,

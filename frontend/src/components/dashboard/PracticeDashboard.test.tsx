@@ -57,7 +57,7 @@ describe('MORE PACE Dashboard', () => {
     const get = vi.spyOn(api, 'get').mockRejectedValue(new Error('Server unavailable'));
     render(<PracticeDashboard />);
     await screen.findByText('Sessions unavailable');
-    expect(screen.getAllByText('Server unavailable').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Sessions unavailable: Server unavailable/).length).toBeGreaterThan(0);
     get.mockResolvedValue([]);
     fireEvent.click(screen.getByRole('button', {name: 'Refresh sessions'}));
     await screen.findByText('No session selected');

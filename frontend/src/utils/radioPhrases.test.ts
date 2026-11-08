@@ -14,7 +14,7 @@ import {
   type ProactiveSpeechOptions,
 } from './radioPhrases';
 import { RADIO_PHRASE_CONSTANTS, type RadioPersona } from '../constants/f1';
-import type { LocaleCode } from '../locales';
+type LocaleCode = 'en' | 'es';
 import type { DirectiveValues, RadioAlertCategory, ReportPhrase } from '../types/telemetry';
 
 /** A repeatable stand-in for Math.random. */

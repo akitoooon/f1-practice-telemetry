@@ -45,6 +45,8 @@ const LIVE_MODE_KEYS: Record<LiveViewMode, string> = {
  */
 export const DeviceSettingsSection: React.FC = () => {
   const { t, locale, setLocale, availableLocales } = useI18n();
+  const responseLanguage = useDevicePreferencesStore(s => s.aiResponseLanguage);
+  const setResponseLanguage = useDevicePreferencesStore(s => s.setAIResponseLanguage);
   const isRadioEnabled = useRadioSettingsStore((s) => s.isRadioEnabled);
   const setIsRadioEnabled = useRadioSettingsStore((s) => s.setIsRadioEnabled);
   const radioHere = useRadioHere();
@@ -85,14 +87,21 @@ export const DeviceSettingsSection: React.FC = () => {
 
       <RadioEffectsSettings />
 
-      <SettingSection icon={<Languages size={14} />} title={t('nav.language')}>
-        <SelectField label={t('nav.language')} value={locale} onChange={(value) => setLocale(value as LocaleCode)}>
+      <SettingSection icon={<Languages size={14} />} title={t('language.interface')}>
+        <SelectField label={t('language.interface')} value={locale} onChange={(value) => setLocale(value as LocaleCode)}>
           {availableLocales.map((l) => (
             <option key={l.code} value={l.code}>
-              {l.flag} {l.label}
+              {l.code === 'es' ? 'Spanish' : l.label}
             </option>
           ))}
         </SelectField>
+        <p className={shared.hint}>{t('language.interfaceHint')}</p>
+        <SelectField label={t('language.response')} value={responseLanguage} onChange={value => setResponseLanguage(value as 'auto' | 'ja' | 'en')}>
+          <option value="auto">{t('language.follow')}</option>
+          <option value="ja">Japanese</option><option value="en">English</option>
+        </SelectField>
+        <p className={shared.hint}>{t('language.responseHint')}</p>
+        <p className={shared.hint}>{t('language.voiceHint')}</p>
       </SettingSection>
 
       <SettingSection icon={<Ruler size={14} />} title={t('settings.device.units')}>

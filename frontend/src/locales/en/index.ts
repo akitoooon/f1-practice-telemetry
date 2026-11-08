@@ -1,3 +1,5 @@
+import { language } from './language';
+import { workspace } from './workspace';
 import { common } from './common';
 import { nav } from './nav';
 import { history } from './history';
@@ -13,6 +15,8 @@ import { desktop } from './desktop';
  * The radio's spoken calls are not here; they load with the Live tab (`utils/radioPhrases.ts`).
  */
 export const en = {
+  language,
+  workspace,
   common,
   nav,
   history,

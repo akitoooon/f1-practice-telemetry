@@ -32,7 +32,7 @@ const isNumber = (v: number | null | undefined): v is number => typeof v === 'nu
 const asDate = (date: Date | number | string): Date => (date instanceof Date ? date : new Date(date));
 
 /** The language tag dates are written in, for the page's language. */
-export const dateLocale = (locale: string): string => (locale === 'es' ? 'es-AR' : 'en-GB');
+export const dateLocale = (locale: string): string => (locale === 'ja' ? 'ja-JP' : locale === 'es' ? 'es-AR' : 'en-GB');
 
 /** The formatter for some unit preferences, labels from `t` and dates in `locale`. */
 export function createUnitFormatter(prefs: UnitPreferences, t: (key: string) => string, locale: string): UnitFormatter {
