@@ -34,6 +34,16 @@ describe('I18nContext and useI18n Hook', () => {
     document.documentElement.lang = 'en';
   });
 
+  it('keeps the MORE PACE UI in English without overwriting a legacy language preference', () => {
+    localStorage.setItem('f1_telemetry_language', 'es');
+    render(<I18nProvider englishOnly><TestComponent /></I18nProvider>);
+    expect(screen.getByTestId('current-locale')).toHaveTextContent('en');
+    fireEvent.click(screen.getByTestId('switch-es'));
+    expect(screen.getByTestId('current-locale')).toHaveTextContent('en');
+    expect(document.documentElement.lang).toBe('en');
+    expect(localStorage.getItem('f1_telemetry_language')).toBe('es');
+  });
+
   it('provides default English locale and translations', () => {
     render(
       <I18nProvider>
@@ -45,7 +55,7 @@ describe('I18nContext and useI18n Hook', () => {
     expect(screen.getByTestId('current-flag')).toHaveTextContent('🇬🇧');
     expect(screen.getByTestId('nav-history')).toHaveTextContent('Session History');
     expect(screen.getByTestId('nav-comparator')).toHaveTextContent('Lap Comparator');
-    expect(screen.getByTestId('nav-live')).toHaveTextContent('Live Session');
+    expect(screen.getByTestId('nav-live')).toHaveTextContent('Dashboard');
     expect(screen.getByTestId('common-drivers-interpolated')).toHaveTextContent('20 Drivers');
     expect(screen.getByTestId('common-laps-interpolated')).toHaveTextContent('53 Laps');
   });

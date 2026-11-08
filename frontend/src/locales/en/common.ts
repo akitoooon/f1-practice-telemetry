@@ -105,7 +105,7 @@ export const common = {
   updates: {
     title: "What's New",
     subtitle: 'Release Notes & Direct Downloads',
-    devTitle: 'F1 Telemetry Analyzer',
+    devTitle: 'MORE PACE Analyzer',
     devSubtitle: 'Local Development Build',
     updateAvailable: 'New Update Available',
     latestVersion: 'Version {version}',

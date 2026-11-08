@@ -7,14 +7,14 @@ describe('useDocumentTitle', () => {
     const { rerender } = renderHook(({ title }) => useDocumentTitle(title), {
       initialProps: { title: 'Session History' },
     });
-    expect(document.title).toBe('Session History · F1 Telemetry');
+    expect(document.title).toBe('Session History · MORE PACE');
 
     rerender({ title: 'P4 · L12/29 · Melbourne' });
-    expect(document.title).toBe('P4 · L12/29 · Melbourne · F1 Telemetry');
+    expect(document.title).toBe('P4 · L12/29 · Melbourne · MORE PACE');
   });
 
   it('falls back to the default title without one', () => {
     renderHook(() => useDocumentTitle(null));
-    expect(document.title).toBe('F1 Telemetry — Real-Time Telemetry & Pit Wall');
+    expect(document.title).toBe('MORE PACE — Practice Analysis');
   });
 });

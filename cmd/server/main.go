@@ -117,7 +117,7 @@ func main() {
 	cfg := loadServerConfig()
 
 	if cfg.ShowVersion {
-		fmt.Printf("F1 Telemetry Analyzer %s (commit: %s, built: %s)\n", version, commit, date)
+		fmt.Printf("MORE PACE %s (commit: %s, built: %s)\n", version, commit, date)
 		os.Exit(0)
 	}
 
@@ -178,7 +178,7 @@ func run(cfg ServerConfig, envFiles []string, exe string) (restart bool, err err
 	}
 
 	printStartupBanner(version, commit, localURL, lanURL, cfg.UDPAddr, dbPath, native)
-	slog.Info("Starting F1 Telemetry Analyzer", "version", version, "dashboard", localURL, "network", lanURL,
+	slog.Info("Starting MORE PACE", "version", version, "dashboard", localURL, "network", lanURL,
 		"udpAddr", cfg.UDPAddr, "db", dbPath, "log", logPath, "afterUpdate", cfg.AfterUpdate)
 	if exe != "" {
 		if err := system.RemoveReplacedExecutable(exe); err != nil {
@@ -346,10 +346,10 @@ func openRunningInstance(ctx context.Context, localURL, port string, native, ope
 			"port with -http or F1T_HTTP_ADDR (for example :8090)", port, bindErr)
 	}
 
-	slog.Info("F1 Telemetry Analyzer is already running", "url", localURL, "version", ver.Version)
+	slog.Info("MORE PACE is already running", "url", localURL, "version", ver.Version)
 	if native {
 		if err := desktop.ShowRunningWindow(ctx, localURL); err != nil {
-			return fmt.Errorf("F1 Telemetry %s is already running but didn't show its window (%w). Quit it from "+
+			return fmt.Errorf("MORE PACE %s is already running but didn't show its window (%w). Quit it from "+
 				"its icon in the notification area and start it again", ver.Version, err)
 		}
 		return nil
@@ -358,7 +358,7 @@ func openRunningInstance(ctx context.Context, localURL, port string, native, ope
 		return nil
 	}
 	if err := system.OpenBrowser(localURL); err != nil {
-		return fmt.Errorf("F1 Telemetry Analyzer is already running at %s, but the browser didn't open: %w", localURL, err)
+		return fmt.Errorf("MORE PACE is already running at %s, but the browser didn't open: %w", localURL, err)
 	}
 	return nil
 }
@@ -532,7 +532,7 @@ func gracefulShutdown(
 	sessionManager *session.SessionManager,
 	srv *http.Server,
 ) {
-	slog.Info("Shutting down F1 Telemetry Analyzer...")
+	slog.Info("Shutting down MORE PACE...")
 
 	cancel() // Stop UDP listener and packet loop
 	inputMgr.Stop()
@@ -553,7 +553,7 @@ func gracefulShutdown(
 func printStartupBanner(ver, cmt, localURL, lanURL, udpAddr, dbPath string, native bool) {
 	fmt.Println()
 	fmt.Println("  ========================================================")
-	fmt.Println("  🏎️   F1 TELEMETRY ANALYZER  -  Official Telemetry Hub")
+	fmt.Println("  🏎️   MORE PACE  -  Practice analysis")
 	fmt.Printf("      Version: %s (%s)\n", ver, cmt)
 	fmt.Println("  ========================================================")
 	fmt.Println()

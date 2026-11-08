@@ -16,7 +16,7 @@ const (
 	// runKeyPath is where Windows looks for programs to start when the user signs in.
 	runKeyPath = `Software\Microsoft\Windows\CurrentVersion\Run`
 	// runValueName is this app's entry under runKeyPath.
-	runValueName = appName
+	runValueName = legacyAppName
 )
 
 // autostartCommand is the command line that starts exe with args.

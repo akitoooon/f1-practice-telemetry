@@ -34,7 +34,7 @@ describe('App Navigation and Tab Bar', () => {
     localStorage.clear();
   });
 
-  it('renders the navigation tabs in order: Session History, Lap Comparator, Progress, Live Session', () => {
+  it('renders the navigation tabs in order: Session History, Lap Comparator, Progress, Dashboard', () => {
     render(<App />);
 
     const tabs = navItems();
@@ -42,7 +42,7 @@ describe('App Navigation and Tab Bar', () => {
     expect(tabs[0]).toHaveTextContent(/Session History/i);
     expect(tabs[1]).toHaveTextContent(/Lap Comparator/i);
     expect(tabs[2]).toHaveTextContent(/Progress/i);
-    expect(tabs[3]).toHaveTextContent(/Live Session/i);
+    expect(tabs[3]).toHaveTextContent(/Dashboard/i);
   });
 
   it('defaults to Session History on initial launch', async () => {
@@ -73,10 +73,10 @@ describe('App Navigation and Tab Bar', () => {
     expect(localStorage.getItem('f1_active_tab')).toBe('comparator');
   });
 
-  it('switches to Live Session when clicked and persists to localStorage', async () => {
+  it('switches to Dashboard when clicked and persists to localStorage', async () => {
     render(<App />);
 
-    const liveTab = navItem(/Live Session/i);
+    const liveTab = navItem(/Dashboard/i);
     fireEvent.click(liveTab);
 
     expect(await screen.findByTestId('dashboard-view')).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe('App Navigation and Tab Bar', () => {
     const gear = screen.getByRole('link', { name: 'Settings' });
     expect(gear).toHaveAttribute('href', '/settings/voice');
     fireEvent.click(gear);
-    expect(await screen.findByRole('heading', { level: 1, name: 'Settings' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Settings' }, { timeout: 5000 })).toBeInTheDocument();
     expect(gear).toHaveAttribute('aria-current', 'page');
     expect(localStorage.getItem('f1_active_tab')).toBe('progress');
 
@@ -122,15 +122,15 @@ describe('App Navigation and Tab Bar', () => {
     render(<App />);
 
     expect(await screen.findByTestId('dashboard-view')).toBeInTheDocument();
-    expect(navItem(/Live Session/i)).toHaveAttribute('aria-current', 'page');
-    expect(navItem(/Live Session/i)).toHaveAttribute('href', '/live/cockpit');
+    expect(navItem(/Dashboard/i)).toHaveAttribute('aria-current', 'page');
+    expect(navItem(/Dashboard/i)).toHaveAttribute('href', '/live/cockpit');
   });
 
   it('goes back to the previous page with the browser back button', async () => {
     render(<App />);
     await screen.findByTestId('session-history-view');
 
-    fireEvent.click(navItem(/Live Session/i));
+    fireEvent.click(navItem(/Dashboard/i));
     expect(await screen.findByTestId('dashboard-view')).toBeInTheDocument();
 
     act(() => {

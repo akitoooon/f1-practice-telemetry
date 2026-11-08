@@ -296,11 +296,11 @@ export const live = {
   engineerWindow: {
     standbyTitle: 'Ingeniero de carrera',
     title: 'El ingeniero tiene su propia ventana',
-    body: 'En esta PC el ingeniero de carrera habla y escucha en su propia ventana, así esta queda libre para lo que quieras. Funciona mientras F1 Telemetry está abierta, aunque cierres su ventana.',
+    body: 'En esta PC el ingeniero de carrera habla y escucha en su propia ventana, así esta queda libre para lo que quieras. Funciona mientras MORE PACE está abierta, aunque cierres su ventana.',
     open: 'Abrir la ventana del ingeniero',
     openShort: 'Abrir',
     pill: 'Ingeniero en su propia ventana',
-    openApp: 'Abrir F1 Telemetry',
+    openApp: 'Abrir MORE PACE',
     showFailed: 'No se abrió la ventana: {error}',
   },
   cockpit: {

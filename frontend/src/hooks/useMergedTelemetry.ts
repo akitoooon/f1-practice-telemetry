@@ -47,6 +47,8 @@ export function useMergedTelemetry({
   const [detectedTurns, setDetectedTurns] = useState<TrackTurn[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const requestKey = `${lapAId || ''}:${lapBId || ''}:${stepMeters}:${targetTrackLength || ''}`;
+  const [resultKey, setResultKey] = useState('');
   const [hoverDistance, setHoverDistance] = useState<number | null>(null);
   const [zoomDomain, setZoomDomain] = useState<[number, number] | null>(initialZoom);
 
@@ -61,6 +63,7 @@ export function useMergedTelemetry({
     }
 
     const controller = new AbortController();
+    let current = true;
     setLoading(true);
     setError(null);
 
@@ -74,22 +77,26 @@ export function useMergedTelemetry({
       signal: controller.signal,
     })
       .then((data) => {
+        if (!current) return;
+        setResultKey(requestKey);
         setComparisonData(data.points || []);
         setDetectedTurns(data.turns || []);
       })
       .catch((err) => {
+        if (!current) return;
         if (err.name !== 'AbortError') {
           setComparisonData([]);
           setDetectedTurns([]);
           setError(err instanceof Error ? err.message : 'Error merging telemetry');
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { if (current) setLoading(false); });
 
     return () => {
+      current = false;
       controller.abort();
     };
-  }, [lapAId, lapBId, stepMeters, targetTrackLength]);
+  }, [lapAId, lapBId, stepMeters, targetTrackLength, requestKey]);
 
   // Filtered telemetry points based on active distance zoom domain
   const chartData = useMemo(() => {
@@ -203,9 +210,9 @@ export function useMergedTelemetry({
   }, []);
 
   return {
-    comparisonData,
-    detectedTurns,
-    chartData,
+    comparisonData: resultKey === requestKey ? comparisonData : [],
+    detectedTurns: resultKey === requestKey ? detectedTurns : [],
+    chartData: resultKey === requestKey ? chartData : [],
     sector1Distance,
     sector2Distance,
     totalDeltaMs,
