@@ -1,0 +1,9 @@
+.bar { width: 100%; display: flex; align-items: center; gap: 28px; min-width: 0; }
+.bar > div { display: flex; flex-direction: column; gap: 3px; font-size: 12px; white-space: nowrap; }
+.bar strong { font-size: 14px; font-weight: 600; }
+.label { font-size: 8px; letter-spacing: .1em; color: var(--text-secondary); }
+.bar .status { flex-direction: row; align-items: center; gap: 7px; margin-left: auto; color: var(--text-secondary); }
+.status i { width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+.status i[data-state='live'] { background: var(--status-success); }
+@media (--laptop) { .bar { gap: 18px; } }
+@media (--tablet) { .bar { flex-wrap: wrap; gap: 10px 18px; } .bar .status { margin-left: 0; } }

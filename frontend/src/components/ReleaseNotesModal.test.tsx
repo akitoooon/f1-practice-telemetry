@@ -10,7 +10,7 @@ const mockUpdateData: UpdateCheckResponse = {
   update_available: true,
   current_version: 'v1.0.0-beta.1',
   latest_version: 'v1.0.0-beta.2',
-  release_name: 'F1 Telemetry Analyzer v1.0.0-beta.2',
+  release_name: 'MORE PACE Analyzer v1.0.0-beta.2',
   release_notes: '### Features\n* Added active aero chart\n* Fixed timing calculations',
   html_url: 'https://github.com/mgauna-ar/f1game-telemetry-go/releases/tag/v1.0.0-beta.2',
   published_at: '2026-08-18T20:00:00Z',
@@ -243,7 +243,7 @@ describe('ReleaseNotesModal', () => {
       fireEvent.click(screen.getByRole('button', { name: /Update now/ }));
 
       expect(post).toHaveBeenCalledWith('/api/desktop/update');
-      expect(await screen.findByText('Restarting F1 Telemetry…')).toBeInTheDocument();
+      expect(await screen.findByText('Restarting MORE PACE…')).toBeInTheDocument();
     });
 
     it('has nothing to install on the newest version', () => {

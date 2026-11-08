@@ -83,7 +83,7 @@ describe('AppSection', () => {
     const post = vi.spyOn(api, 'post').mockResolvedValue({ version: 'v2.1.0' });
     renderSection();
 
-    expect(await screen.findByText('F1 Telemetry v2.0.0')).toBeInTheDocument();
+    expect(await screen.findByText('MORE PACE v2.0.0')).toBeInTheDocument();
     const notice = (await screen.findByRole('heading', { name: 'Version v2.1.0 is available', level: 4 })).closest(
       'section'
     )!;
@@ -91,7 +91,7 @@ describe('AppSection', () => {
     fireEvent.click(within(notice).getByRole('button', { name: /Update now/ }));
 
     expect(post).toHaveBeenCalledWith('/api/desktop/update');
-    expect(await within(notice).findByText('Restarting F1 Telemetry…')).toBeInTheDocument();
+    expect(await within(notice).findByText('Restarting MORE PACE…')).toBeInTheDocument();
   });
 
   it('says when it is the newest version, and that a development build does not update', async () => {
@@ -116,7 +116,7 @@ describe('AppSection', () => {
       .mockResolvedValueOnce({ ...windows, show_window_at_start: false, start_with_os: true });
     renderSection();
 
-    const openWindow = await screen.findByRole('switch', { name: /Open the window when F1 Telemetry starts/ });
+    const openWindow = await screen.findByRole('switch', { name: /Open the window when MORE PACE starts/ });
     expect(openWindow).toBeChecked();
     fireEvent.click(openWindow);
     expect(put).toHaveBeenCalledWith('/api/desktop', { show_window_at_start: false });
@@ -125,16 +125,16 @@ describe('AppSection', () => {
     fireEvent.click(screen.getByRole('switch', { name: /Start with Windows/ }));
     expect(put).toHaveBeenCalledWith('/api/desktop', { start_with_os: true });
     await waitFor(() => expect(screen.getByRole('switch', { name: /Start with Windows/ })).toBeChecked());
-    expect(screen.getByText(/keeps F1 Telemetry running in the tray/)).toBeInTheDocument();
+    expect(screen.getByText(/keeps MORE PACE running in the tray/)).toBeInTheDocument();
   });
 
   it('names the small window on macOS and Linux, which have no Start with Windows', async () => {
     mockGets(appWindow);
     renderSection();
 
-    expect(await screen.findByRole('switch', { name: /Open the app window when F1 Telemetry starts/ })).toBeChecked();
+    expect(await screen.findByRole('switch', { name: /Open the app window when MORE PACE starts/ })).toBeChecked();
     expect(screen.queryByRole('switch', { name: /Start with Windows/ })).not.toBeInTheDocument();
-    expect(screen.getByText(/Closing this page keeps F1 Telemetry running in its terminal/)).toBeInTheDocument();
+    expect(screen.getByText(/Closing this page keeps MORE PACE running in its terminal/)).toBeInTheDocument();
   });
 
   it('shows a failed save instead of hiding it', async () => {
@@ -142,7 +142,7 @@ describe('AppSection', () => {
     vi.spyOn(api, 'put').mockRejectedValue(new Error('disk full'));
     renderSection();
 
-    const openWindow = await screen.findByRole('switch', { name: /Open the window when F1 Telemetry starts/ });
+    const openWindow = await screen.findByRole('switch', { name: /Open the window when MORE PACE starts/ });
     fireEvent.click(openWindow);
     expect(await within(section('Startup')).findByRole('alert')).toHaveTextContent(
       'Could not change the setting: disk full'
@@ -174,22 +174,22 @@ describe('AppSection', () => {
       .mockResolvedValueOnce({ status: 'success' });
     renderSection();
 
-    fireEvent.click(await screen.findByRole('button', { name: /Quit F1 Telemetry/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Quit MORE PACE/ }));
     expect(await within(section('Quit')).findByRole('alert')).toHaveTextContent(
       'Could not quit: desktop app not available'
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /Quit F1 Telemetry/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Quit MORE PACE/ }));
     expect(post).toHaveBeenLastCalledWith('/api/desktop/quit');
-    expect(await screen.findByRole('status')).toHaveTextContent('F1 Telemetry stopped. You can close this page.');
-    expect(screen.queryByRole('button', { name: /Quit F1 Telemetry/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole('status')).toHaveTextContent('MORE PACE stopped. You can close this page.');
+    expect(screen.queryByRole('button', { name: /Quit MORE PACE/ })).not.toBeInTheDocument();
   });
 
   it('is empty on a phone or tablet, which the server refuses', async () => {
     mockGets(new ApiError('only available on the PC the app runs on', 403, 'Forbidden'));
     renderSection();
 
-    expect(await screen.findByText('These are only on the PC that runs F1 Telemetry.')).toBeInTheDocument();
+    expect(await screen.findByText('These are only on the PC that runs MORE PACE.')).toBeInTheDocument();
     expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   });
 });

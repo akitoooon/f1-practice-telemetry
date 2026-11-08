@@ -24,6 +24,8 @@ import styles from './AiRaceEngineer.module.css';
 export interface AiRaceEngineerProps {
   // Optional overrides for standalone or test usage
   isOpenOverride?: boolean;
+  embedded?: boolean;
+  hideLauncher?: boolean;
   onCloseOverride?: () => void;
 }
 
@@ -56,7 +58,7 @@ const getChatPlaceholder = (effectiveMode: string, t: (key: string) => string): 
   }
 };
 
-export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, onCloseOverride }) => {
+export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, onCloseOverride, embedded = false, hideLauncher = false }) => {
   const { t } = useI18n();
   const {
     isOpen: contextIsOpen,
@@ -91,7 +93,7 @@ export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, 
   const setDockPreferred = useDevicePreferencesStore((s) => s.setChatDocked);
   // Docking needs a window wider than a laptop breakpoint; narrower ones keep the floating chat
   const canDock = !useMediaQuery(maxWidth('laptop'));
-  const isDocked = isOpen && dockPreferred && canDock;
+  const isDocked = !embedded && isOpen && dockPreferred && canDock;
   const [inputMessage, setInputMessage] = useState('');
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const widgetRef = useRef<HTMLDivElement | null>(null);
@@ -221,6 +223,7 @@ export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, 
     };
   }, [effectiveMode, comparatorTarget, sessionDebriefTarget, isLiveStandby, liveTrackName, t]);
 
+  if (!isOpen && hideLauncher) return null;
   if (!isOpen) {
     return (
       <button
@@ -246,10 +249,10 @@ export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, 
   return (
     <div
       ref={widgetRef}
-      className={styles.widget}
-      data-expanded={isExpanded}
+      className={`${styles.widget} ${embedded ? styles.embedded : ''}`}
+      data-expanded={!embedded && isExpanded}
       data-docked={isDocked}
-      role={isDocked ? 'complementary' : 'dialog'}
+      role={embedded ? 'region' : isDocked ? 'complementary' : 'dialog'}
       aria-labelledby={titleId}
     >
       {/* The chat behind the settings layer is out of reach while settings are open */}
@@ -298,7 +301,7 @@ export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, 
             <IconButton size="sm" label={t('ai_engineer.clearChat')} onClick={clearMessages}>
               <RotateCcw size={16} />
             </IconButton>
-            {canDock && (
+            {!embedded && canDock && (
               <IconButton
                 size="sm"
                 label={t('ai_engineer.dock')}
@@ -308,7 +311,7 @@ export const AiRaceEngineer: React.FC<AiRaceEngineerProps> = ({ isOpenOverride, 
                 {isDocked ? <PanelRightClose size={16} /> : <PanelRight size={16} />}
               </IconButton>
             )}
-            {!isDocked && (
+            {!embedded && !isDocked && (
               <IconButton size="sm" label={expandLabel} onClick={() => setIsExpanded(!isExpanded)}>
                 {isExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
               </IconButton>

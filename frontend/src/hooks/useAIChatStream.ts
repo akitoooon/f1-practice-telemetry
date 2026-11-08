@@ -101,12 +101,14 @@ export const useAIChatStream = ({
       if (!text || generatingRef.current) return;
       const { config: cfg, keyStatus: keys, t: tr } = latest.current;
       const idSuffix = `${Date.now()}-${++messageSeq.current}`;
+      const context = latest.current.buildChatContext();
 
       const userMsg: ChatMessage = {
         id: `user-${idSuffix}`,
         role: 'user',
         content: text,
         timestamp: new Date(),
+        context,
       };
 
       const assistantMsgId = `assistant-${idSuffix}`;
@@ -116,6 +118,7 @@ export const useAIChatStream = ({
         content: '',
         timestamp: new Date(),
         lastPrompt: text,
+        context,
       };
 
       commitMessages((prev) => [...prev, userMsg, assistantMsg]);
@@ -157,7 +160,7 @@ export const useAIChatStream = ({
           persona: radioState.persona,
           language: resolveRadioLanguage(radioState.radioLanguage, latest.current.locale),
           messages: apiMessages,
-          context: latest.current.buildChatContext(),
+          context,
         };
         const res = await api.stream('/api/ai/chat', body, controller.signal);
 

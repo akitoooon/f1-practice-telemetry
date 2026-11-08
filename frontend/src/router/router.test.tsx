@@ -6,7 +6,7 @@ import { Link } from './Link';
 describe('router', () => {
   it('re-renders readers when the URL changes, and on back', async () => {
     const { result } = renderHook(() => useRoute());
-    expect(result.current).toMatchObject({ page: 'history' });
+    expect(result.current).toMatchObject({ page: 'dashboard' });
 
     act(() => navigate('/live/cockpit'));
     expect(result.current).toEqual({ page: 'live', mode: 'cockpit' });
@@ -16,7 +16,7 @@ describe('router', () => {
       window.history.back();
       await new Promise((resolve) => window.addEventListener('popstate', resolve, { once: true }));
     });
-    expect(result.current).toMatchObject({ page: 'history' });
+    expect(result.current).toMatchObject({ page: 'dashboard' });
   });
 
   it('adds a history entry, or replaces the current one', () => {

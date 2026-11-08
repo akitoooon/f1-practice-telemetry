@@ -76,7 +76,7 @@ describe('TrackProgress', () => {
     const get = vi.spyOn(api, 'get').mockResolvedValue(response());
     renderPage('/progress/Monza');
     await screen.findByRole('table');
-    expect(document.title).toBe('Progress: Monza · F1 Telemetry');
+    expect(document.title).toBe('Progress: Monza · MORE PACE');
     expect(get).toHaveBeenCalledWith('/api/progress', expect.objectContaining({ params: { track: 'Monza' } }));
   });
 

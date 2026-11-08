@@ -1,9 +1,7 @@
 package desktop
 
-import "strings"
-
 // appName is the name the windows, the tray, its tooltip and dialogs show.
-const appName = "F1 Telemetry"
+const appName = "MORE PACE"
 
 // text is what the tray, the windows' titles and dialogs say, in the user's Windows display
 // language.
@@ -25,10 +23,10 @@ type text struct {
 }
 
 var englishText = text{
-	Open:             "Open F1 Telemetry",
+	Open:             "Open MORE PACE",
 	LiveView:         "Live view",
 	Engineer:         "Race engineer",
-	EngineerTitle:    "F1 Telemetry · Race engineer",
+	EngineerTitle:    "MORE PACE · Race engineer",
 	UpdateAvailable:  "Update available: %s",
 	StartWithWindows: "Start with Windows",
 	DevBuildHint:     "Not available for a build run with go run",
@@ -38,14 +36,14 @@ var englishText = text{
 	Live:             "Live: %s",
 	Paused:           "Telemetry paused",
 	Waiting:          "Waiting for the game on UDP port %d",
-	StartFailed:      "F1 Telemetry could not start",
+	StartFailed:      "MORE PACE could not start",
 }
 
 var spanishText = text{
-	Open:             "Abrir F1 Telemetry",
+	Open:             "Abrir MORE PACE",
 	LiveView:         "Vista en vivo",
 	Engineer:         "Ingeniero de carrera",
-	EngineerTitle:    "F1 Telemetry · Ingeniero de carrera",
+	EngineerTitle:    "MORE PACE · Ingeniero de carrera",
 	UpdateAvailable:  "Actualización disponible: %s",
 	StartWithWindows: "Iniciar con Windows",
 	DevBuildHint:     "No disponible al ejecutar con go run",
@@ -55,15 +53,10 @@ var spanishText = text{
 	Live:             "En vivo: %s",
 	Paused:           "Telemetría en pausa",
 	Waiting:          "Esperando al juego en el puerto UDP %d",
-	StartFailed:      "F1 Telemetry no pudo iniciar",
+	StartFailed:      "MORE PACE no pudo iniciar",
 }
 
-// textFor picks the strings for a language tag such as "es-AR": Spanish for any Spanish
-// locale, English otherwise (the dashboard's two languages).
-func textFor(languageTag string) text {
-	lang, _, _ := strings.Cut(strings.ToLower(languageTag), "-")
-	if lang == "es" {
-		return spanishText
-	}
+// textFor keeps the MORE PACE interface in English on every system.
+func textFor(_ string) text {
 	return englishText
 }

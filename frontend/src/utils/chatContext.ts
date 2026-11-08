@@ -44,7 +44,13 @@ export function chatTargetsFromRoute(
   switch (route.page) {
     case 'live':
       return { contextMode: 'live', comparatorTarget: null, sessionDebriefTarget: null };
+    case 'dashboard':
     case 'compare': {
+      if (route.page === 'dashboard' && (!route.lapA || !route.lapB)) {
+        return route.sessionA ? { contextMode: 'session_debrief', comparatorTarget: null, sessionDebriefTarget: {sessionId: route.sessionA, focus: 'story', trackName: trackName(route.sessionA)} }
+          : { contextMode: 'general', comparatorTarget: null, sessionDebriefTarget: null };
+      }
+      // The analysis workspace sends the same identifier-only context as the comparator.
       const { lapA, lapB, zoom, sessionA } = route;
       return {
         contextMode: 'comparator',
@@ -53,6 +59,7 @@ export function chatTargetsFromRoute(
         sessionDebriefTarget: null,
       };
     }
+    case 'coach':
     case 'progress':
     case 'settings':
       return { contextMode: 'general', comparatorTarget: null, sessionDebriefTarget: null };

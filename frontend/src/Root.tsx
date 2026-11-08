@@ -26,7 +26,7 @@ export function Root() {
   }
   if (!isDesktopWindowPath(pathname)) return <App />;
   return (
-    <I18nProvider>
+    <I18nProvider englishOnly>
       <Suspense fallback={null}>
         <DesktopWindow />
       </Suspense>

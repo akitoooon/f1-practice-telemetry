@@ -5,13 +5,13 @@
  */
 :root {
   /* ── Surfaces: page → panel → raised ─────────────────────────────────── */
-  --bg-dark: hsl(222, 47%, 7%); /* page */
-  --bg-panel: hsla(222, 47%, 11%, 0.7);
-  --bg-glass: hsla(222, 47%, 15%, 0.4); /* glass cards (ui/Panel) */
+  --bg-dark: #000000; /* page */
+  --bg-panel: #090909;
+  --bg-glass: #090909; /* glass cards (ui/Panel) */
   /* Opaque stand-in for a glass panel, for sticky headers that content scrolls under */
-  --bg-panel-solid: hsl(222, 40%, 10%);
-  --bg-elevated: hsla(222, 40%, 9%, 0.97); /* dialogs */
-  --bg-popover: rgba(10, 14, 23, 0.98); /* menus, dropdowns, popovers */
+  --bg-panel-solid: #090909;
+  --bg-elevated: #090909; /* dialogs */
+  --bg-popover: #090909; /* menus, dropdowns, popovers */
   --bg-tooltip: rgba(10, 14, 23, 0.92); /* chart and hover tooltips */
   --bg-inset: rgba(0, 0, 0, 0.4); /* inputs and wells */
   --bg-overlay: rgba(0, 0, 0, 0.78); /* modal backdrop */
@@ -19,16 +19,16 @@
   --bg-active: rgba(255, 255, 255, 0.08);
 
   /* ── Text: every level stays at 4.5:1 or more on the surfaces above ──── */
-  --text-primary: hsl(0, 0%, 98%);
+  --text-primary: #F5F5F5;
   --text-body: hsl(213, 27%, 84%); /* long text and labels, softer than headings */
-  --text-secondary: hsl(215, 20%, 65%);
-  --text-muted: hsl(215, 15%, 58%);
+  --text-secondary: #888888;
+  --text-muted: #888888;
   --text-disabled: hsl(215, 12%, 40%); /* disabled controls only */
   --text-on-accent: hsl(222, 47%, 7%); /* dark text on bright fills */
 
   /* ── Borders ─────────────────────────────────────────────────────────── */
-  --border-color: hsla(0, 0%, 100%, 0.08);
-  --border-subtle: hsla(0, 0%, 100%, 0.12);
+  --border-color: #242424;
+  --border-subtle: #242424;
   --border-highlight: hsla(0, 0%, 100%, 0.15);
   --border-strong: hsla(0, 0%, 100%, 0.25);
 
@@ -40,15 +40,15 @@
      purple / green / yellow  session best / personal best / slower (timing only)
      yellow  safety car and yellow flag; orange  VSC and formation lap
      team colour  one 3px left edge on a driver's row */
-  --accent-primary: hsl(351, 100%, 55%); /* F1 red */
-  --accent-glow: hsla(351, 100%, 55%, 0.3);
-  --accent-primary-fill: hsl(351, 100%, 45%); /* red behind white text (4.8:1) */
+  --accent-primary: #F04450; /* MORE PACE red */
+  --accent-glow: transparent;
+  --accent-primary-fill: #F04450; /* primary fill; use dark text */
   --accent-secondary: hsl(199, 89%, 48%); /* neon blue */
-  --accent-secondary-glow: hsla(199, 89%, 48%, 0.3);
+  --accent-secondary-glow: transparent;
   --accent-tertiary: hsl(150, 100%, 40%); /* green */
   --accent-purple: hsl(280, 100%, 65%);
-  --accent-cyan: #00f2fe; /* radio, AI engineer and live highlights */
-  --accent-cyan-glow: rgba(0, 242, 254, 0.25);
+  --accent-cyan: #F04450; /* radio, AI engineer and live highlights */
+  --accent-cyan-glow: transparent;
 
   /* ── Status ──────────────────────────────────────────────────────────── */
   --status-success: #10b981;
@@ -72,8 +72,8 @@
   --f1-you-border: color-mix(in srgb, var(--f1-you) 45%, transparent);
 
   /* Comparison slots A and B */
-  --f1-slot-a: #00d2d3;
-  --f1-slot-b: #ff4757;
+  --f1-slot-a: #F04450;
+  --f1-slot-b: #F5F5F5;
   --f1-slot-a-bg: color-mix(in srgb, var(--f1-slot-a) 8%, transparent);
   --f1-slot-b-bg: color-mix(in srgb, var(--f1-slot-b) 8%, transparent);
   --f1-slot-a-border: color-mix(in srgb, var(--f1-slot-a) 40%, transparent);
@@ -185,7 +185,7 @@
   /* ── Type ────────────────────────────────────────────────────────────── */
   /* Self-hosted variable fonts (styles/index.css): the same digits on every OS, and offline */
   --font-sans: 'Inter Variable', system-ui, sans-serif;
-  --font-display: 'Outfit Variable', 'Inter Variable', system-ui, sans-serif;
+  --font-display: 'Inter Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --font-size-2xs: 0.625rem; /* micro badges */
@@ -220,21 +220,21 @@
   --control-height-md: 36px;
 
   /* The sticky top bar; sticky content below it starts at --sticky-top */
-  --nav-height: 72px;
+  --nav-height: 56px;
   --sticky-top: calc(var(--nav-height) + var(--space-4));
 
   /* ── Radius ──────────────────────────────────────────────────────────── */
   --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
   --radius-full: 9999px;
 
   /* ── Shadows ─────────────────────────────────────────────────────────── */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
-  --shadow-panel: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --shadow-panel: none;
   --shadow-dialog: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
   /* Coloured glows use one of two blur radii: `box-shadow: 0 0 var(--glow-sm) <colour>` */
   --glow-sm: 8px;

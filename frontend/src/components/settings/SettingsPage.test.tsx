@@ -99,13 +99,13 @@ describe('SettingsPage', () => {
     fireEvent.click(await within(nav).findByRole('link', { name: 'App' }));
     const app = await screen.findByRole('region', { name: 'App' });
     expect(within(app).getByText('This PC', { selector: 'span' })).toBeInTheDocument();
-    expect(await within(app).findByRole('switch', { name: /Open the window when F1 Telemetry starts/ })).toBeChecked();
+    expect(await within(app).findByRole('switch', { name: /Open the window when MORE PACE starts/ })).toBeChecked();
     expect(document.title).toMatch(/^Settings: App/);
   });
 
   it('opens App from a link on another device and says why it is empty', async () => {
     renderAt('/settings/app');
-    expect(await screen.findByText('These are only on the PC that runs F1 Telemetry.')).toBeInTheDocument();
+    expect(await screen.findByText('These are only on the PC that runs MORE PACE.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'App' })).toHaveAttribute('aria-current', 'page');
   });
 

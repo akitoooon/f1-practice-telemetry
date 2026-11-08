@@ -331,3 +331,5 @@
     height: calc(100vh - 80px);
   }
 }
+
+.widget.embedded { position: relative; inset: auto; width: 100%; max-width: none; height: calc(100vh - 120px); max-height: none; border-radius: var(--radius-xs); box-shadow: none; animation: none; }

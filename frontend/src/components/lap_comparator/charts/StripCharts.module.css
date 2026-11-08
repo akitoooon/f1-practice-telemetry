@@ -144,3 +144,8 @@
     grid-template-columns: 92px minmax(0, 1fr);
   }
 }
+
+.wrap[data-compact] { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+.wrap[data-compact] .chart { height: 58px; }
+.wrap[data-compact] .strip[data-axis] .chart { height: 78px; }
+.wrap[data-compact] .strip { grid-template-columns: 90px minmax(0,1fr); }

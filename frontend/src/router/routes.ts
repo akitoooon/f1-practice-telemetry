@@ -53,6 +53,8 @@ export interface ListFilterParams {
 export type Route =
   | { page: 'history'; sessionId?: number; tab: SessionDetailTab; listFilter?: ListFilterParams }
   | ({ page: 'compare' } & CompareParams)
+  | ({ page: 'dashboard' } & CompareParams)
+  | { page: 'coach' }
   | { page: 'progress'; track?: string }
   | { page: 'live'; mode: LiveViewMode }
   | { page: 'settings'; section: SettingsPageSection };
@@ -60,11 +62,13 @@ export type Route =
 export type Page = Route['page'];
 
 /**
- * The last page, reopened when the dashboard is opened at `/`. The old tab names are kept. The
- * settings page isn't one: the dashboard opens on the page used before it.
+ * Legacy page preference: retained for compatibility. A new app launch at `/` always opens
+ * the Dashboard; explicit URLs still open their requested workspace.
  */
 export const STORAGE_KEY_LAST_PAGE = 'f1_active_tab';
 const PAGE_TO_STORED: Record<Exclude<Page, 'settings'>, string> = {
+  dashboard: 'dashboard',
+  coach: 'coach',
   history: 'history',
   compare: 'comparator',
   progress: 'progress',
@@ -135,22 +139,19 @@ export const storedLiveMode = (): LiveViewMode => storedLiveModeFor(isPhoneSize(
 /** Remembers the live mode for the next `/live` at this size. */
 export const storeLiveMode = (mode: LiveViewMode): void => storeLiveModeFor(isPhoneSize(), mode);
 
-const storedPage = (): Page => {
-  const saved = storage.get<string>(STORAGE_KEY_LAST_PAGE, 'history');
-  if (saved === 'comparator') return 'compare';
-  return saved === 'live' || saved === 'progress' ? saved : 'history';
-};
+
 
 /**
- * The page a URL shows. Missing or invalid parts fall back to their defaults: `/` reopens the
- * last page, `/live` the last live mode, and an unknown path the session list.
+ * The page a URL shows. Missing or invalid parts fall back to their defaults: `/` opens the
+ * Dashboard, `/live` the last live mode, and an unknown path the session list.
  */
 export function parseRoute(pathname: string, search = ''): Route {
   const parts = pathname.split('/').filter(Boolean);
   const [first, second, third] = parts;
-  const page = first ?? storedPage();
+  const page = first ?? 'dashboard';
+  if (page === 'coach') return { page: 'coach' };
 
-  if (page === 'compare') {
+  if (page === 'compare' || page === 'dashboard') {
     const query = new URLSearchParams(search);
     const sessionA = positiveInt(query.get('sa'));
     const params: CompareParams = {
@@ -160,7 +161,7 @@ export function parseRoute(pathname: string, search = ''): Route {
       lapB: positiveInt(query.get('b')),
       zoom: parseZoom(query.get('zoom')),
     };
-    return { page: 'compare', ...params };
+    return { page, ...params };
   }
   if (page === 'progress') {
     return { page: 'progress', track: decodeSegment(second) };
@@ -207,6 +208,8 @@ export function buildPath(route: Route): string {
       return `/settings/${route.section}`;
     case 'progress':
       return route.track ? `/progress/${encodeURIComponent(route.track)}` : '/progress';
+    case 'coach': return '/coach';
+    case 'dashboard':
     case 'compare': {
       const query = new URLSearchParams();
       if (route.sessionA) query.set('sa', String(route.sessionA));
@@ -215,12 +218,12 @@ export function buildPath(route: Route): string {
       if (route.lapB) query.set('b', String(route.lapB));
       if (route.zoom) query.set('zoom', `${roundMeters(route.zoom[0])}-${roundMeters(route.zoom[1])}`);
       const text = query.toString();
-      return text ? `/compare?${text}` : '/compare';
+      return text ? `/${route.page}?${text}` : `/${route.page}`;
     }
   }
 }
 
-/** Remembers the page for the next time the dashboard is opened at `/`. */
+/** Retains the existing per-browser page preference without changing the startup route. */
 export const storeLastPage = (page: Page) => {
   if (page !== 'settings') storage.set(STORAGE_KEY_LAST_PAGE, PAGE_TO_STORED[page]);
 };

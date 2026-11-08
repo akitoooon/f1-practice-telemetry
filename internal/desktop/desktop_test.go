@@ -67,9 +67,9 @@ func TestTooltipFitsWindowsLimit(t *testing.T) {
 
 func TestTextFor(t *testing.T) {
 	tests := map[string]text{
-		"es-AR": spanishText,
-		"ES":    spanishText,
-		"es":    spanishText,
+		"es-AR": englishText,
+		"ES":    englishText,
+		"es":    englishText,
 		"en-US": englishText,
 		"pt-BR": englishText,
 		"":      englishText,

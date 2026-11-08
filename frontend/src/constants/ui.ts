@@ -34,7 +34,7 @@ export const UI = {
   MODAL_MAX_WIDTH_PX: 680,
 } as const;
 
-/** Browser tab titles read "<view> · F1 Telemetry"; the default matches index.html. */
-export const APP_NAME = 'F1 Telemetry';
-export const DEFAULT_DOCUMENT_TITLE = 'F1 Telemetry — Real-Time Telemetry & Pit Wall';
+/** Browser tab titles read "<view> · MORE PACE"; the default matches index.html. */
+export const APP_NAME = 'MORE PACE';
+export const DEFAULT_DOCUMENT_TITLE = 'MORE PACE — Practice Analysis';
 

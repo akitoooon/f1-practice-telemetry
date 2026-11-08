@@ -68,14 +68,14 @@ describe('routes', () => {
     expect(parseRoute('/progress/%E0%A4%A')).toEqual({ page: 'progress', track: undefined });
   });
 
-  it('opens the last page at the root, and the list at an unknown path', () => {
-    expect(parseRoute('/')).toMatchObject({ page: 'history' });
+  it('opens the Dashboard at the root, and the list at an unknown path', () => {
+    expect(parseRoute('/')).toMatchObject({ page: 'dashboard' });
     storeLastPage('compare');
-    expect(parseRoute('/')).toMatchObject({ page: 'compare' });
+    expect(parseRoute('/')).toMatchObject({ page: 'dashboard' });
     storeLastPage('live');
-    expect(parseRoute('/')).toMatchObject({ page: 'live' });
+    expect(parseRoute('/')).toMatchObject({ page: 'dashboard' });
     storeLastPage('progress');
-    expect(parseRoute('/')).toMatchObject({ page: 'progress' });
+    expect(parseRoute('/')).toMatchObject({ page: 'dashboard' });
     expect(parseRoute('/nowhere/ai')).toEqual({ page: 'history', sessionId: undefined, tab: 'story' });
   });
 
@@ -86,11 +86,13 @@ describe('routes', () => {
     expect(settingsPath('device')).toBe('/settings/device');
     storeLastPage('progress');
     storeLastPage('settings');
-    expect(parseRoute('/')).toMatchObject({ page: 'progress' });
+    expect(parseRoute('/')).toMatchObject({ page: 'dashboard' });
   });
 
   it('builds URLs that parse back to the same route', () => {
     const routes: Route[] = [
+      { page: 'dashboard', sessionA: 3, lapA: 4, lapB: 5 },
+      { page: 'coach' },
       { page: 'history', tab: 'story' },
       { page: 'history', tab: 'story', listFilter: { quick: 'noDriver', track: 'Abu Dhabi' } },
       { page: 'history', tab: 'story', listFilter: { quick: 'podium' } },

@@ -2,7 +2,7 @@ import { render, screen, fireEvent, act, waitFor, within } from '@testing-librar
 import { vi } from 'vitest';
 import { resetDevicePreferences } from '../store/useDevicePreferencesStore';
 import { api } from '../utils/apiClient';
-import { Dashboard } from './Dashboard';
+import { RaceControlDashboard as Dashboard } from './RaceControlDashboard';
 import { useSessionStatusStore } from '../store/useSessionStatusStore';
 import { useTelemetryDataStore } from '../store/useTelemetryDataStore';
 import * as storeModule from '../store/useTelemetryStore';

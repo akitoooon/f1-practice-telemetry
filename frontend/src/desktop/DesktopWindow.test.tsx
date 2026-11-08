@@ -103,7 +103,7 @@ describe('DesktopWindow', () => {
     render(<DesktopWindow />);
 
     expect(await screen.findByRole('switch', { name: /Show this window at startup/ })).toBeInTheDocument();
-    expect(screen.getByText(/keeps F1 Telemetry running in its terminal/)).toBeInTheDocument();
+    expect(screen.getByText(/keeps MORE PACE running in its terminal/)).toBeInTheDocument();
   });
 
   it('shows a failed save instead of hiding it', async () => {
@@ -121,9 +121,9 @@ describe('DesktopWindow', () => {
     const close = vi.spyOn(window, 'close').mockImplementation(() => {});
     render(<DesktopWindow />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /Quit F1 Telemetry/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Quit MORE PACE/ }));
     expect(post).toHaveBeenCalledWith('/api/desktop/quit');
-    expect(await screen.findByRole('heading', { name: 'F1 Telemetry stopped' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'MORE PACE stopped' })).toBeInTheDocument();
     expect(close).toHaveBeenCalled();
   });
 
@@ -133,8 +133,8 @@ describe('DesktopWindow', () => {
     const close = vi.spyOn(window, 'close').mockImplementation(() => {});
     render(<DesktopWindow />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /Quit F1 Telemetry/ }));
-    expect(await screen.findByRole('heading', { name: 'F1 Telemetry stopped' })).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole('button', { name: /Quit MORE PACE/ }));
+    expect(await screen.findByRole('heading', { name: 'MORE PACE stopped' })).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(close).toHaveBeenCalled();
   });
@@ -145,7 +145,7 @@ describe('DesktopWindow', () => {
     const close = vi.spyOn(window, 'close').mockImplementation(() => {});
     render(<DesktopWindow />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /Quit F1 Telemetry/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Quit MORE PACE/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not quit: desktop app not available');
     expect(close).not.toHaveBeenCalled();
   });
@@ -163,7 +163,7 @@ describe('DesktopWindow', () => {
     mockGets(new ApiError('only available on the PC the app runs on', 403, 'Forbidden'));
     render(<DesktopWindow />);
 
-    expect(await screen.findByText(/only available on the PC running F1 Telemetry/)).toBeInTheDocument();
+    expect(await screen.findByText(/only available on the PC running MORE PACE/)).toBeInTheDocument();
     expect(screen.queryByRole('switch')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Quit/ })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Update now/ })).not.toBeInTheDocument();
@@ -181,7 +181,7 @@ describe('DesktopWindow', () => {
     fireEvent.click(within(notice).getByRole('button', { name: /Update now/ }));
 
     expect(post).toHaveBeenCalledWith('/api/desktop/update');
-    expect(await within(notice).findByText('Restarting F1 Telemetry…')).toBeInTheDocument();
+    expect(await within(notice).findByText('Restarting MORE PACE…')).toBeInTheDocument();
     expect(within(notice).getByRole('button', { name: /Update now/ })).toBeDisabled();
   });
 
@@ -208,12 +208,12 @@ describe('DesktopWindow', () => {
     const close = vi.spyOn(window, 'close').mockImplementation(() => {});
     render(<DesktopWindow />);
 
-    expect(await screen.findByRole('heading', { name: 'F1 Telemetry has its own window now' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'MORE PACE has its own window now' })).toBeInTheDocument();
     expect(screen.queryByRole('switch')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Quit/ })).not.toBeInTheDocument();
     expect(get).not.toHaveBeenCalledWith('/api/system/check-updates', expect.anything());
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open F1 Telemetry' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open MORE PACE' }));
     expect(post).toHaveBeenCalledWith('/api/desktop/open-dashboard');
     await waitFor(() => expect(close).toHaveBeenCalled());
   });
@@ -224,9 +224,9 @@ describe('DesktopWindow', () => {
     const close = vi.spyOn(window, 'close').mockImplementation(() => {});
     render(<DesktopWindow />);
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Open F1 Telemetry' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Open MORE PACE' }));
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      "Could not open F1 Telemetry's window: the app has no window of its own here"
+      "Could not open MORE PACE's window: the app has no window of its own here"
     );
     expect(close).not.toHaveBeenCalled();
   });
@@ -234,14 +234,14 @@ describe('DesktopWindow', () => {
   it("doesn't offer updates on a build that can't update itself, or when it's the latest", async () => {
     const get = mockGets(appWindow);
     const { unmount } = render(<DesktopWindow />);
-    expect(await screen.findByRole('button', { name: /Quit F1 Telemetry/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Quit MORE PACE/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Update now/ })).not.toBeInTheDocument();
     expect(get).not.toHaveBeenCalledWith('/api/system/check-updates', expect.anything());
     unmount();
 
     mockGets({ ...appWindow, can_update: true }, waiting, { ...newerRelease, update_available: false });
     render(<DesktopWindow />);
-    expect(await screen.findByRole('button', { name: /Quit F1 Telemetry/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Quit MORE PACE/ })).toBeInTheDocument();
     await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/system/check-updates', expect.anything()));
     expect(screen.queryByRole('button', { name: /Update now/ })).not.toBeInTheDocument();
   });

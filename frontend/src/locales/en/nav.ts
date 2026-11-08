@@ -1,19 +1,19 @@
 export const nav = {
-  brandTitle: 'F1 Telemetry',
+  brandTitle: 'MORE PACE',
   brandTag: '',
-  brandSub: 'EA F1 2025 / 2026 DLC',
+  brandSub: 'Practice analysis',
   tabs: {
     history: 'Session History',
     comparator: 'Lap Comparator',
     progress: 'Progress',
-    live: 'Live Session',
+    live: 'Live',
   },
   /** On narrow screens */
   tabsShort: {
     history: 'History',
     comparator: 'Compare',
     progress: 'Progress',
-    live: 'Live',
+    live: 'Dashboard',
   },
   liveBadge: 'LIVE',
   portBadge: 'PORT',
