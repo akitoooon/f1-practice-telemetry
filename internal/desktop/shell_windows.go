@@ -50,7 +50,7 @@ const (
 
 // pageBackground is the dashboard's --bg-dark (frontend/src/styles/base/variables.css), shown
 // while a page loads.
-var pageBackground = application.NewRGB(9, 14, 26)
+var pageBackground = application.NewRGB(0, 0, 0)
 
 // windowSize is a window's size before it was ever moved, and the smallest it gets.
 type windowSize struct {
@@ -279,7 +279,7 @@ func localDataDir() string {
 	if err != nil {
 		base = os.TempDir()
 	}
-	return filepath.Join(base, appName)
+	return filepath.Join(base, legacyAppName)
 }
 
 // removeOldAppWindowProfile deletes the browser profile 1.x's small window used. Files an old

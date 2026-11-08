@@ -3,7 +3,6 @@ import { Calendar, GitCompare, Radio, Settings, Sparkles, TrendingUp } from 'luc
 import { F1TelemetryLogo } from './components/F1TelemetryLogo';
 import { useI18n } from './context/I18nContext';
 import { AiRaceEngineer } from './components/AiRaceEngineer';
-import { LanguageSelector } from './components/LanguageSelector';
 import { PerformanceModeToggle } from './components/common/PerformanceModeToggle';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { ToastContainer } from './components/common/ToastContainer';
@@ -149,12 +148,12 @@ function AppContent() {
       <header ref={topNavRef} className={styles.topNav} hidden={driverFocus}>
         <div className={styles.brand}>
           <div className={styles.logo} data-live={isLiveFeedActive || undefined}>
-            <F1TelemetryLogo size={28} animated={isLiveFeedActive} />
+            <F1TelemetryLogo size={28} animated={false} />
           </div>
           <div className={styles.brandText}>
             <p className={styles.brandTitle}>
-              <span className={styles.brandF1}>F1</span>
-              <span className={styles.brandName}>TELEMETRY</span>
+              <span className={styles.brandF1}>MORE</span>
+              <span className={styles.brandName}>PACE</span>
             </p>
             <div className={styles.brandSub}>{t('nav.brandSub')}</div>
           </div>
@@ -224,7 +223,7 @@ function AppContent() {
             <Settings size={15} aria-hidden="true" />
           </Link>
           <PerformanceModeToggle />
-          <LanguageSelector />
+
           <span className={styles.port}>
             {t('nav.portBadge')} {udpPort}
           </span>

@@ -30,9 +30,9 @@ function detectDefaultLocale(): LocaleCode {
  * renders nothing on first load (rather than flashing English), and on a switch it keeps the
  * current language on screen.
  */
-export function I18nProvider({ children }: { children: React.ReactNode }) {
+export function I18nProvider({ children, englishOnly = false }: { children: React.ReactNode; englishOnly?: boolean }) {
   // The language chosen, and the one on screen (the last one whose dictionary is loaded)
-  const [requested, setRequested] = useState<LocaleCode>(detectDefaultLocale);
+  const [requested, setRequested] = useState<LocaleCode>(() => englishOnly ? 'en' : detectDefaultLocale());
   const [locale, setLocaleState] = useState<LocaleCode | null>(() => (isLocaleLoaded(requested) ? requested : null));
 
   useEffect(() => {
@@ -54,12 +54,13 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, [requested]);
 
   // Another window of the app on this PC picked a language: this one follows
-  useEffect(() => onStoredElsewhere([STORAGE_KEY], () => setRequested(detectDefaultLocale())), []);
+  useEffect(() => onStoredElsewhere([STORAGE_KEY], () => setRequested(englishOnly ? 'en' : detectDefaultLocale())), [englishOnly]);
 
   const setLocale = useCallback((newLocale: LocaleCode) => {
+    if (englishOnly) return;
     setRequested(newLocale);
     storage.set(STORAGE_KEY, newLocale);
-  }, []);
+  }, [englishOnly]);
 
   const shown = locale ?? 'en';
 
@@ -84,10 +85,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       locale: shown,
       setLocale,
       t,
-      availableLocales,
+      availableLocales: englishOnly ? availableLocales.filter(l => l.code === 'en') : availableLocales,
       currentLocaleInfo,
     }),
-    [shown, setLocale, t, currentLocaleInfo]
+    [shown, setLocale, t, currentLocaleInfo, englishOnly]
   );
 
   // First load in a language not yet downloaded: a moment of nothing rather than English

@@ -1,6 +1,6 @@
-# 🏎️ F1 Telemetry
+# MORE PACE
 
-> Real-time telemetry, pit wall dashboard and AI race engineer for **EA Sports F1 25 & F1 26**.
+> Personal practice analysis with real-time telemetry, pit wall dashboard and AI race engineer for **EA Sports F1 25 & F1 26**.
 
 [![Go](https://img.shields.io/badge/Go-1.26+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react)](https://react.dev/)
@@ -131,3 +131,6 @@ This is an unofficial, open-source community tool. It is **not** affiliated with
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE). The dashboard bundles the [Inter](https://github.com/rsms/inter), [Outfit](https://github.com/Outfitio/Outfit-Fonts) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) fonts under the [SIL Open Font License 1.1](https://openfontlicense.org).
+
+
+See [MORE PACE Dashboard v1](docs/more-pace-dashboard-v1.md) for the initial analysis workspace and compatibility scope.

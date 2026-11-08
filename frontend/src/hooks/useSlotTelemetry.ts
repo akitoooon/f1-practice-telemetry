@@ -8,6 +8,8 @@ import { resolveReferenceLap, resolveComparisonLap } from '../utils/comparatorPr
 
 export interface UseSlotTelemetryOptions {
   sessionId: number | '';
+  /** Reload after new laps are saved; the caller invalidates the shared session cache. */
+  refreshKey?: number;
   preloadLapId?: number;
   isSlotB?: boolean;
   isSameSessionAsSlotA?: boolean;
@@ -43,6 +45,7 @@ export interface UseSlotTelemetryReturn {
 
 export function useSlotTelemetry({
   sessionId,
+  refreshKey = 0,
   preloadLapId,
   isSlotB = false,
   isSameSessionAsSlotA = false,
@@ -156,7 +159,7 @@ export function useSlotTelemetry({
     return () => {
       cancelled = true;
     };
-  }, [sessionId]);
+  }, [sessionId, refreshKey]);
 
   // Selected lap object
   const selectedLap = useMemo(() => laps.find((l) => l.id === lapId), [laps, lapId]);

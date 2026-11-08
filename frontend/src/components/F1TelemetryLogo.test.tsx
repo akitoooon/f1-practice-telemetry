@@ -7,7 +7,7 @@ describe('F1TelemetryLogo Component', () => {
     const { container } = render(<F1TelemetryLogo />);
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();
-    expect(svg).toHaveAttribute('aria-label', 'F1 Telemetry');
+    expect(svg).toHaveAttribute('aria-label', 'MORE PACE');
     expect(svg).toHaveAttribute('width', '28');
     expect(svg).toHaveAttribute('height', '28');
   });

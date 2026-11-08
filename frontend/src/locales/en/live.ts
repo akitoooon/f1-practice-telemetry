@@ -10,7 +10,7 @@ export const live = {
   establishingWebSocket: 'Establishing WebSocket connection to the local telemetry daemon...',
   connecting: 'Connecting to Telemetry Stream...',
   greenFlag: 'GREEN FLAG',
-  commandCenter: 'F1 Telemetry Command Center',
+  commandCenter: 'MORE PACE Command Center',
   totalLaps: 'TOTAL LAPS',
   timeRemaining: 'TIME REMAINING',
   conditions: 'CONDITIONS',
@@ -296,11 +296,11 @@ export const live = {
   engineerWindow: {
     standbyTitle: 'Race engineer',
     title: 'The engineer has its own window',
-    body: 'On this PC the race engineer speaks and listens in its own window, so this one is free for anything else. It runs while F1 Telemetry does, even with its window closed.',
+    body: 'On this PC the race engineer speaks and listens in its own window, so this one is free for anything else. It runs while MORE PACE does, even with its window closed.',
     open: 'Open the engineer window',
     openShort: 'Open',
     pill: 'Engineer in its own window',
-    openApp: 'Open F1 Telemetry',
+    openApp: 'Open MORE PACE',
     showFailed: 'The window didn’t open: {error}',
   },
   cockpit: {

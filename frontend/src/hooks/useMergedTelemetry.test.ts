@@ -4,6 +4,7 @@ import { useMergedTelemetry } from './useMergedTelemetry';
 import type { Lap } from '../types/session';
 import type { ComparatorResponse } from '../types/comparator';
 import { makeLap } from '../test/wireFactories';
+import { api } from '../utils/apiClient';
 
 describe('useMergedTelemetry Hook', () => {
   const mockResponse: ComparatorResponse = {
@@ -109,5 +110,23 @@ describe('useMergedTelemetry Hook', () => {
     });
 
     expect(result.current.zoomDomain).toEqual([50, 150]);
+  });
+
+  it('hides old traces immediately and ignores late results after changing laps', async () => {
+    let finishOld!: (value: ComparatorResponse) => void;
+    const get = vi.spyOn(api, 'get').mockResolvedValueOnce(mockResponse)
+      .mockImplementationOnce(() => new Promise(resolve => { finishOld = resolve; }))
+      .mockResolvedValueOnce({ points: [], turns: [] });
+    const { result, rerender } = renderHook(({lapBId}) => useMergedTelemetry({lapAId: 1, lapBId}),
+      {initialProps: {lapBId: 2}});
+    await waitFor(() => expect(result.current.comparisonData).toHaveLength(3));
+    rerender({lapBId: 3});
+    expect(result.current.comparisonData).toEqual([]);
+    rerender({lapBId: 4});
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => finishOld(mockResponse));
+    expect(result.current.comparisonData).toEqual([]);
+    expect(result.current.detectedTurns).toEqual([]);
+    expect(get).toHaveBeenCalledTimes(3);
   });
 });

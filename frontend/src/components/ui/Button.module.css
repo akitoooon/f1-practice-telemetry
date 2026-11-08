@@ -42,7 +42,7 @@
 .primary {
   background: var(--accent-primary-fill);
   border-color: var(--accent-primary-fill);
-  color: var(--text-primary);
+  color: var(--text-on-accent);
   box-shadow: 0 0 var(--glow-sm) var(--accent-glow);
 }
 

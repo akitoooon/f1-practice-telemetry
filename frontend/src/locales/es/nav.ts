@@ -1,5 +1,5 @@
 export const nav = {
-  brandTitle: 'F1 Telemetry',
+  brandTitle: 'MORE PACE',
   brandTag: '',
   brandSub: 'EA F1 2025 / 2026 DLC',
   tabs: {
